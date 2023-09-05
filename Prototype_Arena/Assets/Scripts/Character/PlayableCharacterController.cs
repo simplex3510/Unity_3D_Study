@@ -1,10 +1,11 @@
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 #endif
 
 [RequireComponent(typeof(CharacterController))]
-public class CharacterController : MonoBehaviour
+public class PlayableCharacterController : MonoBehaviour
 {
     [Header("Player")]
     [Tooltip("Move speed of the character in m/s")]
@@ -95,7 +96,7 @@ public class CharacterController : MonoBehaviour
 #endif
     private Animator _animator;
     private CharacterController _controller;
-    private InputsSystem _inputsSystem;
+    private InputSystem _inputSystem;
     private GameObject _mainCamera;
 
     private const float _threshold = 0.01f;
@@ -114,13 +115,61 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        
+    }
+
+    private void Start()
+    {
+        _controller = GetComponent<CharacterController>();
+        _inputSystem = GetComponent<InputSystem>();
+#if ENABLE_INPUT_SYSTEM
+        _playerInput = GetComponent<PlayerInput>();
+#else
+	    Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
+#endif
+
+        _jumpTimeoutDelta = JumpTimeout;
+        _fallTimeoutDelta = FallTimeout;
+    }
+
+    private void Update()
+    {
+        Move();
+    }
+
     private void Move()
     {
         float targetSpeed = MoveSpeed;
-        if (_inputsSystem.move == Vector2.zero)
+        if (_inputSystem.move == Vector2.zero)
         {
             targetSpeed = 0.0f;
         }
-    }
 
+        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z).magnitude;
+
+        float speedOffest = 0.1f;
+        float inputMagnitude = _inputSystem.analogMovement ? _inputSystem.move.magnitude : 1.0f;
+
+        if (currentHorizontalSpeed < targetSpeed - speedOffest || targetSpeed + speedOffest < currentHorizontalSpeed)
+        {
+            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
+            _speed = Mathf.Round(_speed * 1000f) / 1000f;
+        }
+        else
+        {
+            _speed = targetSpeed;
+        }
+
+        //Vector3 inputDirection = new Vector3(_inputSystem.move.x, 0f, _inputSystem.move.y).normalized;
+        //if (_inputSystem.move != Vector2.zero)
+        //{
+        //    _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg;
+        //}
+
+        Vector3 targetDirection = Quaternion.Euler(0f, _targetRotation, 0f) * Vector3.forward;
+        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
+                         new Vector3(0f, _verticalVelocity, 0f) * Time.deltaTime);
+    }
 }
