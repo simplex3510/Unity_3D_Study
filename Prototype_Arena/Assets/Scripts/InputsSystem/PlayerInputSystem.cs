@@ -48,10 +48,7 @@ public class InputSystem : MonoBehaviour
 
     public void OnLook(InputValue value)
     {
-        if (cursorInputForLook)
-        {
-            LookInput(value.Get<Vector2>());
-        }
+        LookInput(value.Get<Vector2>());
     }
 #endif
     #endregion
@@ -65,7 +62,8 @@ public class InputSystem : MonoBehaviour
 
     private void SetCursorState(bool newState)
     {
-        Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
+        // Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
+        Cursor.lockState = CursorLockMode.None;
     }
     #endregion
 }

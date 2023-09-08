@@ -1,7 +1,6 @@
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
 #endif
 
 [RequireComponent(typeof(CharacterController))]
@@ -95,9 +94,9 @@ public class PlayableCharacterController : MonoBehaviour
     private PlayerInput _playerInput;
 #endif
     private Animator _animator;
-    private CharacterController _controller;
+    private CharacterController _charController;
     private InputSystem _inputSystem;
-    private GameObject _mainCamera;
+    private Camera _mainCamera;
 
     private const float _threshold = 0.01f;
 
@@ -117,12 +116,15 @@ public class PlayableCharacterController : MonoBehaviour
 
     private void Awake()
     {
-        
+        if (_mainCamera == null)
+        {
+            _mainCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+        }
     }
 
     private void Start()
     {
-        _controller = GetComponent<CharacterController>();
+        _charController = GetComponent<CharacterController>();
         _inputSystem = GetComponent<InputSystem>();
 #if ENABLE_INPUT_SYSTEM
         _playerInput = GetComponent<PlayerInput>();
@@ -139,6 +141,11 @@ public class PlayableCharacterController : MonoBehaviour
         Move();
     }
 
+    private void LateUpdate()
+    {
+        //CameraRotation();
+    }
+
     private void Move()
     {
         float targetSpeed = MoveSpeed;
@@ -147,7 +154,7 @@ public class PlayableCharacterController : MonoBehaviour
             targetSpeed = 0.0f;
         }
 
-        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z).magnitude;
+        float currentHorizontalSpeed = new Vector3(_charController.velocity.x, 0f, _charController.velocity.z).magnitude;
 
         float speedOffest = 0.1f;
         float inputMagnitude = _inputSystem.analogMovement ? _inputSystem.move.magnitude : 1.0f;
@@ -162,14 +169,57 @@ public class PlayableCharacterController : MonoBehaviour
             _speed = targetSpeed;
         }
 
-        //Vector3 inputDirection = new Vector3(_inputSystem.move.x, 0f, _inputSystem.move.y).normalized;
+        //Vector3 inputDirection = new Vector3(_inputSystem.move.x, 0.0f, _inputSystem.move.y).normalized;
         //if (_inputSystem.move != Vector2.zero)
         //{
-        //    _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg;
+        //    _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg/* + _mainCamera.transform.eulerAngles.y*/;
+        //    float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
+        //    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
         //}
 
-        Vector3 targetDirection = Quaternion.Euler(0f, _targetRotation, 0f) * Vector3.forward;
-        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                         new Vector3(0f, _verticalVelocity, 0f) * Time.deltaTime);
+        //Vector3 targetDirection = Quaternion.Euler(0f, _targetRotation, 0f) * Vector3.forward;
+        //_charController.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0f, _verticalVelocity, 0f) * Time.deltaTime);
+
+        Vector3 inputDirection = _mainCamera.ViewportToWorldPoint(_inputSystem.look);
+        Quaternion currentRotation = transform.rotation;
+        Quaternion targetRotation = Quaternion.LookRotation(inputDirection - transform.position);
+        transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, RotationSmoothTime * Time.deltaTime);
+
+        //_charController.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0f, _verticalVelocity, 0f) * Time.deltaTime);
+    }
+
+    private void CameraRotation()
+    {
+        // if there is an input and camera position is not fixed
+        if (_inputSystem.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+        {
+            //Don't multiply mouse input by Time.deltaTime;
+            float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
+
+            _cinemachineTargetYaw += _inputSystem.look.x * deltaTimeMultiplier;
+            _cinemachineTargetPitch += _inputSystem.look.y * deltaTimeMultiplier;
+        }
+
+        // clamp our rotations so our values are limited 360 degrees
+        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+        _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+
+        // Cinemachine will follow this target
+        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
+    }
+
+    private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+    {
+        if (lfAngle < -360f)
+        {
+            lfAngle += 360f;
+        }
+
+        if (lfAngle > 360f)
+        {
+            lfAngle -= 360f;
+        }
+        
+        return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
 }
