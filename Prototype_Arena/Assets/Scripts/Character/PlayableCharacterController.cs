@@ -169,8 +169,8 @@ public class PlayableCharacterController : MonoBehaviour
             _speed = targetSpeed;
         }
 
-        //Vector3 inputDirection = new Vector3(_inputSystem.move.x, 0.0f, _inputSystem.move.y).normalized;
-        //if (_inputSystem.move != Vector2.zero)
+        //Vector3 inputDirection = new Vector3(_playerInputSystem.move.x, 0.0f, _playerInputSystem.move.y).normalized;
+        //if (_playerInputSystem.move != Vector2.zero)
         //{
         //    _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg/* + _mainCamera.transform.eulerAngles.y*/;
         //    float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
@@ -178,11 +178,19 @@ public class PlayableCharacterController : MonoBehaviour
         //}
 
         //Vector3 targetDirection = Quaternion.Euler(0f, _targetRotation, 0f) * Vector3.forward;
-        //_charController.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0f, _verticalVelocity, 0f) * Time.deltaTime);
+        //_charController.Move(Vector3.forward * (_speed * Time.deltaTime) + new Vector3(0f, _verticalVelocity, 0f) * Time.deltaTime);
 
-        Vector3 inputPosition = _mainCamera.ScreenToWorldPoint(new Vector3(_playerInputSystem.look.x, _playerInputSystem.look.y, _mainCamera.nearClipPlane));
-        Quaternion targetRotation = Quaternion.LookRotation(inputPosition - transform.position);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1000f * Time.deltaTime);
+        // Move
+        Vector3 inputDirection = new Vector3(_playerInputSystem.move.x, 0.0f, _playerInputSystem.move.y);
+        _charController.Move(inputDirection.normalized * (_speed * Time.deltaTime));
+
+        // Rotate
+        Ray rayCamera = _mainCamera.ScreenPointToRay(new Vector3(_playerInputSystem.look.x, _playerInputSystem.look.y, _mainCamera.nearClipPlane));
+        if (Physics.Raycast(rayCamera, out RaycastHit raycastHit, float.MaxValue, LayerMask.GetMask("Ground")))
+        {
+            Vector3 diretion = (raycastHit.point - transform.position).normalized;
+            transform.rotation = Quaternion.LookRotation(diretion);
+        }
     }
 
     private void CameraRotation()
