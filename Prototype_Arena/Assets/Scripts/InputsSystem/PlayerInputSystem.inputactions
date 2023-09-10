@@ -1,5 +1,5 @@
 {
-    "name": "InputsSystem",
+    "name": "PlayerInputSystem",
     "maps": [
         {
             "name": "Character",
@@ -16,7 +16,7 @@
                 },
                 {
                     "name": "Look",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "19ed3df5-7d08-4a53-94ef-5ccb26d1805f",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -83,9 +83,9 @@
                 {
                     "name": "",
                     "id": "ca1402ff-5366-4c29-b20e-3f68b4e47b73",
-                    "path": "<Pointer>/delta",
+                    "path": "<Mouse>/position",
                     "interactions": "",
-                    "processors": "InvertVector2(invertX=false),ScaleVector2(x=0.05,y=0.05)",
+                    "processors": "",
                     "groups": "PC",
                     "action": "Look",
                     "isComposite": false,

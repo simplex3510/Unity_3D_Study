@@ -499,6 +499,11 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 1249070784041097321, guid: 0f71c6a168ba47a439918b2394c1a022,
+        type: 3}
+      propertyPath: m_NeverAutoSwitchControlSchemes
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7360341244364489628, guid: 0f71c6a168ba47a439918b2394c1a022,
         type: 3}
       propertyPath: m_Name

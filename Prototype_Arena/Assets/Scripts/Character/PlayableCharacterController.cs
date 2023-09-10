@@ -95,7 +95,7 @@ public class PlayableCharacterController : MonoBehaviour
 #endif
     private Animator _animator;
     private CharacterController _charController;
-    private InputSystem _inputSystem;
+    private PlayerInputSystem _playerInputSystem;
     private Camera _mainCamera;
 
     private const float _threshold = 0.01f;
@@ -125,7 +125,7 @@ public class PlayableCharacterController : MonoBehaviour
     private void Start()
     {
         _charController = GetComponent<CharacterController>();
-        _inputSystem = GetComponent<InputSystem>();
+        _playerInputSystem = GetComponent<PlayerInputSystem>();
 #if ENABLE_INPUT_SYSTEM
         _playerInput = GetComponent<PlayerInput>();
 #else
@@ -149,7 +149,7 @@ public class PlayableCharacterController : MonoBehaviour
     private void Move()
     {
         float targetSpeed = MoveSpeed;
-        if (_inputSystem.move == Vector2.zero)
+        if (_playerInputSystem.move == Vector2.zero)
         {
             targetSpeed = 0.0f;
         }
@@ -157,7 +157,7 @@ public class PlayableCharacterController : MonoBehaviour
         float currentHorizontalSpeed = new Vector3(_charController.velocity.x, 0f, _charController.velocity.z).magnitude;
 
         float speedOffest = 0.1f;
-        float inputMagnitude = _inputSystem.analogMovement ? _inputSystem.move.magnitude : 1.0f;
+        float inputMagnitude = _playerInputSystem.analogMovement ? _playerInputSystem.move.magnitude : 1.0f;
 
         if (currentHorizontalSpeed < targetSpeed - speedOffest || targetSpeed + speedOffest < currentHorizontalSpeed)
         {
@@ -180,24 +180,21 @@ public class PlayableCharacterController : MonoBehaviour
         //Vector3 targetDirection = Quaternion.Euler(0f, _targetRotation, 0f) * Vector3.forward;
         //_charController.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0f, _verticalVelocity, 0f) * Time.deltaTime);
 
-        Vector3 inputDirection = _mainCamera.ViewportToWorldPoint(_inputSystem.look);
-        Quaternion currentRotation = transform.rotation;
-        Quaternion targetRotation = Quaternion.LookRotation(inputDirection - transform.position);
-        transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, RotationSmoothTime * Time.deltaTime);
-
-        //_charController.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0f, _verticalVelocity, 0f) * Time.deltaTime);
+        Vector3 inputPosition = _mainCamera.ScreenToWorldPoint(new Vector3(_playerInputSystem.look.x, _playerInputSystem.look.y, _mainCamera.nearClipPlane));
+        Quaternion targetRotation = Quaternion.LookRotation(inputPosition - transform.position);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1000f * Time.deltaTime);
     }
 
     private void CameraRotation()
     {
         // if there is an input and camera position is not fixed
-        if (_inputSystem.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+        if (_playerInputSystem.look.sqrMagnitude >= _threshold && !LockCameraPosition)
         {
             //Don't multiply mouse input by Time.deltaTime;
             float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-            _cinemachineTargetYaw += _inputSystem.look.x * deltaTimeMultiplier;
-            _cinemachineTargetPitch += _inputSystem.look.y * deltaTimeMultiplier;
+            _cinemachineTargetYaw += _playerInputSystem.look.x * deltaTimeMultiplier;
+            _cinemachineTargetPitch += _playerInputSystem.look.y * deltaTimeMultiplier;
         }
 
         // clamp our rotations so our values are limited 360 degrees
