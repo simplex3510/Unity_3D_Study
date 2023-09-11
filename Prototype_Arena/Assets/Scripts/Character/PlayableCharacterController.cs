@@ -1,11 +1,13 @@
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
 #endif
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayableCharacterController : MonoBehaviour
 {
+    // Player
     [Header("Player")]
     [Tooltip("Move speed of the character in m/s")]
     public float MoveSpeed = 2.0f;
@@ -38,6 +40,7 @@ public class PlayableCharacterController : MonoBehaviour
     [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
     public float FallTimeout = 0.15f;
 
+    // Player Grounded
     [Header("Player Grounded")]
     [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
     public bool Grounded = true;
@@ -51,6 +54,7 @@ public class PlayableCharacterController : MonoBehaviour
     [Tooltip("What layers the character uses as ground")]
     public LayerMask GroundLayers;
 
+    // Cinemachine
     [Header("Cinemachine")]
     [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
     public GameObject CinemachineCameraTarget;
@@ -169,27 +173,17 @@ public class PlayableCharacterController : MonoBehaviour
             _speed = targetSpeed;
         }
 
-        //Vector3 inputDirection = new Vector3(_playerInputSystem.move.x, 0.0f, _playerInputSystem.move.y).normalized;
-        //if (_playerInputSystem.move != Vector2.zero)
-        //{
-        //    _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg/* + _mainCamera.transform.eulerAngles.y*/;
-        //    float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
-        //    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-        //}
-
-        //Vector3 targetDirection = Quaternion.Euler(0f, _targetRotation, 0f) * Vector3.forward;
-        //_charController.Move(Vector3.forward * (_speed * Time.deltaTime) + new Vector3(0f, _verticalVelocity, 0f) * Time.deltaTime);
-
         // Move
-        Vector3 inputDirection = new Vector3(_playerInputSystem.move.x, 0.0f, _playerInputSystem.move.y);
-        _charController.Move(inputDirection.normalized * (_speed * Time.deltaTime));
+        Vector3 inputDirection = new Vector3(_playerInputSystem.move.x, 0.0f, _playerInputSystem.move.y).normalized;
+        _charController.Move(inputDirection * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
         // Rotate
         Ray rayCamera = _mainCamera.ScreenPointToRay(new Vector3(_playerInputSystem.look.x, _playerInputSystem.look.y, _mainCamera.nearClipPlane));
-        if (Physics.Raycast(rayCamera, out RaycastHit raycastHit, float.MaxValue, LayerMask.GetMask("Ground")))
+        if (Physics.Raycast(rayCamera, out RaycastHit raycastHit, float.MaxValue, GroundLayers))
         {
-            Vector3 diretion = (raycastHit.point - transform.position).normalized;
-            transform.rotation = Quaternion.LookRotation(diretion);
+            Vector3 mouseDirection = new Vector3(raycastHit.point.x, transform.position.y, raycastHit.point.z);
+            Vector3 targetDiretion = (mouseDirection - transform.position).normalized;
+            transform.rotation = Quaternion.LookRotation(targetDiretion);
         }
     }
 
