@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
@@ -7,6 +9,12 @@ using UnityEngine.InputSystem.XR;
 [RequireComponent(typeof(CharacterController))]
 public class PlayableCharacterController : MonoBehaviour
 {
+    [Header("For Debug")]
+    public Vector3 moveDirection;
+    public Vector3 lookDirection;
+    public Vector3 targDirection;
+    public float targetAngle;
+
     // Player
     [Header("Player")]
     [Tooltip("Move speed of the character in m/s")]
@@ -39,6 +47,9 @@ public class PlayableCharacterController : MonoBehaviour
 
     [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
     public float FallTimeout = 0.15f;
+
+    [Tooltip("Time required to animate idle uncombat motion")]
+    public float IdleTimeout = 3.0f;
 
     // Player Grounded
     [Header("Player Grounded")]
@@ -77,22 +88,27 @@ public class PlayableCharacterController : MonoBehaviour
 
     // player
     private float _speed;
-    private float _animationBlend;
+    private float _animationBlendIdle;
+    private float _animationBlendFront;
+    private float _animationBlendRight;
     private float _targetRotation = 0.0f;
     private float _rotationVelocity;
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
 
+    // direction
+
+
     // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
+    private float _idleTimeoutDelta;
 
     // animation IDs
-    private int _animIDSpeed;
-    private int _animIDGrounded;
-    private int _animIDJump;
-    private int _animIDFreeFall;
-    private int _animIDMotionSpeed;
+    private int _animParam_Idle;
+    private int _animParam_Front;
+    private int _animParam_Right;
+    private int _animParam_IsMoving;
 
 #if ENABLE_INPUT_SYSTEM
     private PlayerInput _playerInput;
@@ -128,6 +144,7 @@ public class PlayableCharacterController : MonoBehaviour
 
     private void Start()
     {
+        _animator = GetComponent<Animator>();
         _charController = GetComponent<CharacterController>();
         _playerInputSystem = GetComponent<PlayerInputSystem>();
 #if ENABLE_INPUT_SYSTEM
@@ -136,13 +153,14 @@ public class PlayableCharacterController : MonoBehaviour
 	    Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
 
-        _jumpTimeoutDelta = JumpTimeout;
-        _fallTimeoutDelta = FallTimeout;
+        AssignAnimationParameters();
     }
 
     private void Update()
     {
+        Rotate();
         Move();
+        AnimateMotion();
     }
 
     private void LateUpdate()
@@ -174,19 +192,77 @@ public class PlayableCharacterController : MonoBehaviour
         }
 
         // Move
-        Vector3 inputDirection = new Vector3(_playerInputSystem.move.x, 0.0f, _playerInputSystem.move.y).normalized;
-        _charController.Move(inputDirection * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+        moveDirection = new Vector3(_playerInputSystem.move.x, 0.0f, _playerInputSystem.move.y).normalized;
+        _charController.Move(moveDirection * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+    }
 
-        // Rotate
+    private void Rotate()
+    {
         Ray rayCamera = _mainCamera.ScreenPointToRay(new Vector3(_playerInputSystem.look.x, _playerInputSystem.look.y, _mainCamera.nearClipPlane));
         if (Physics.Raycast(rayCamera, out RaycastHit raycastHit, float.MaxValue, GroundLayers))
         {
             Vector3 mouseDirection = new Vector3(raycastHit.point.x, transform.position.y, raycastHit.point.z);
-            Vector3 targetDiretion = (mouseDirection - transform.position).normalized;
-            transform.rotation = Quaternion.LookRotation(targetDiretion);
+            lookDirection = (mouseDirection - transform.position).normalized;
+            transform.rotation = Quaternion.LookRotation(lookDirection);
         }
     }
 
+    private void AnimateMotion()
+    {
+        bool isInit = false;
+        float targetAnimThreshold;
+        if (moveDirection == Vector3.zero)
+        {
+            targetAnimThreshold = 3f;
+
+            if (_idleTimeoutDelta < 0.01f)
+            {
+                _animator.SetBool(_animParam_IsMoving, false);
+                _idleTimeoutDelta += Time.deltaTime;
+
+            }
+            else if (_idleTimeoutDelta < IdleTimeout)
+            {
+                _idleTimeoutDelta += Time.deltaTime;
+            }
+            else
+            {
+                _animationBlendIdle = Mathf.Lerp(_animationBlendIdle, targetAnimThreshold, Time.deltaTime);
+                _animator.SetFloat(_animParam_Idle, _animationBlendIdle);
+            }
+
+            _animator.SetFloat(_animParam_Front, 0f);
+            _animator.SetFloat(_animParam_Right, 0f);
+        }
+        else
+        {
+            isInit = true;
+        }
+        
+        if (isInit == true)
+        {
+            _idleTimeoutDelta = 0.0f;
+            _animationBlendIdle = 0.0f;
+            _animator.SetFloat(_animParam_Idle, _animationBlendIdle);
+            _animator.SetBool(_animParam_IsMoving, true);
+            isInit = false;
+        }
+
+        targDirection = (lookDirection - moveDirection).normalized;
+        targetAngle = Mathf.Atan2(targDirection.z, targDirection.x) * Mathf.Rad2Deg;
+
+        
+    }
+
+    private void AssignAnimationParameters()
+    {
+        _animParam_Idle = Animator.StringToHash("Idle");
+        _animParam_Front = Animator.StringToHash("Front");
+        _animParam_Right = Animator.StringToHash("Right");
+        _animParam_IsMoving = Animator.StringToHash("IsMoving");
+    }
+
+    [Obsolete("Camera Rotation is replaced other method")]
     private void CameraRotation()
     {
         // if there is an input and camera position is not fixed
@@ -207,6 +283,7 @@ public class PlayableCharacterController : MonoBehaviour
         CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
     }
 
+    [Obsolete]
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
     {
         if (lfAngle < -360f)
