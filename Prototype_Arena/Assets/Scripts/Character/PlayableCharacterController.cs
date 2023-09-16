@@ -23,6 +23,9 @@ public class PlayableCharacterController : MonoBehaviour
     [Tooltip("Sprint speed of the character in m/s")]
     public float SprintSpeed = 5.335f;
 
+    [Tooltip("Diagonal angle of moving")]
+    public float diagonalAngle = 0.71f;
+
     [Tooltip("How fast the character turns to face movement direction")]
     [Range(0.0f, 0.3f)]
     public float RotationSmoothTime = 0.12f;
@@ -88,9 +91,6 @@ public class PlayableCharacterController : MonoBehaviour
 
     // player
     private float _speed;
-    private float _animationBlendIdle;
-    private float _animationBlendFront;
-    private float _animationBlendRight;
     private float _targetRotation = 0.0f;
     private float _rotationVelocity;
     private float _verticalVelocity;
@@ -99,10 +99,25 @@ public class PlayableCharacterController : MonoBehaviour
     // direction
 
 
+    // Vector3 Extention
+    private Vector3 leftVector     = new Vector3(-1f, 0f, 0f).normalized;
+    private Vector3 frontL45Vector = new Vector3(-1f, 0f, 1f).normalized;
+    private Vector3 frontVector    = new Vector3(0f, 0f, 1f).normalized;
+    private Vector3 frontR45Vector = new Vector3(1f, 0f, 1f).normalized;
+    private Vector3 rightVector    = new Vector3(1f, 0f, 0f).normalized;
+    private Vector3 backR45Vector  = new Vector3(1f, 0f, -1f).normalized;
+    private Vector3 backVector     = new Vector3(0f, 0f, -1f).normalized;
+    private Vector3 backL45Vector  = new Vector3(-1f, 0f, -1f).normalized;
+
     // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
     private float _idleTimeoutDelta;
+
+    // animation blend value
+    private float _animBlendIdle;
+    private float _animBlendFront;
+    private float _animBlendRight;
 
     // animation IDs
     private int _animParam_Idle;
@@ -192,8 +207,8 @@ public class PlayableCharacterController : MonoBehaviour
         }
 
         // Move
-        moveDirection = new Vector3(_playerInputSystem.move.x, 0.0f, _playerInputSystem.move.y).normalized;
-        _charController.Move(moveDirection * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+        moveDirection = new Vector3(_playerInputSystem.move.x, 0, _playerInputSystem.move.y);
+        _charController.Move(moveDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
     }
 
     private void Rotate()
@@ -227,12 +242,9 @@ public class PlayableCharacterController : MonoBehaviour
             }
             else
             {
-                _animationBlendIdle = Mathf.Lerp(_animationBlendIdle, targetAnimThreshold, Time.deltaTime);
-                _animator.SetFloat(_animParam_Idle, _animationBlendIdle);
+                _animBlendIdle = Mathf.Lerp(_animBlendIdle, targetAnimThreshold, Time.deltaTime);
+                _animator.SetFloat(_animParam_Idle, _animBlendIdle);
             }
-
-            _animator.SetFloat(_animParam_Front, 0f);
-            _animator.SetFloat(_animParam_Right, 0f);
         }
         else
         {
@@ -242,16 +254,119 @@ public class PlayableCharacterController : MonoBehaviour
         if (isInit == true)
         {
             _idleTimeoutDelta = 0.0f;
-            _animationBlendIdle = 0.0f;
-            _animator.SetFloat(_animParam_Idle, _animationBlendIdle);
+            _animBlendIdle = 0.0f;
+            _animator.SetFloat(_animParam_Idle, _animBlendIdle);
             _animator.SetBool(_animParam_IsMoving, true);
             isInit = false;
         }
 
-        targDirection = (lookDirection - moveDirection).normalized;
-        targetAngle = Mathf.Atan2(targDirection.z, targDirection.x) * Mathf.Rad2Deg;
+        // get targetAngle
+        targetAngle = Vector3.SignedAngle(transform.forward, moveDirection, Vector3.up);
+        if (targetAngle < 0f)
+        {
+            targetAngle += 360f;
+        }
+        Debug.Log($"angle : {targetAngle}");
 
-        
+        // if has move
+        if (moveDirection == Vector3.zero)
+        {
+            _animBlendFront = Mathf.Lerp(_animBlendFront, 0f, Time.deltaTime * SpeedChangeRate);
+            _animBlendRight = Mathf.Lerp(_animBlendRight, 0f, Time.deltaTime * SpeedChangeRate);
+            _animator.SetFloat(_animParam_Front, _animBlendFront);
+            _animator.SetFloat(_animParam_Right, _animBlendRight);
+        }
+        else
+        {
+            // front
+            if (337.5f < targetAngle || targetAngle <= 22.5f)
+            {
+                _animBlendFront = Mathf.Lerp(_animBlendFront, 1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, 0f, Time.deltaTime * SpeedChangeRate);
+                _animator.SetFloat(_animParam_Front, _animBlendFront);
+                _animator.SetFloat(_animParam_Right, _animBlendRight);
+
+                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
+                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+            }
+            // frontR45
+            else if (292.5f < targetAngle && targetAngle <= 337.5f)
+            {
+                _animBlendFront = Mathf.Lerp(_animBlendFront, 1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, 1f, Time.deltaTime * SpeedChangeRate);
+                _animator.SetFloat(_animParam_Front, _animBlendFront);
+                _animator.SetFloat(_animParam_Right, _animBlendRight);
+
+                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
+                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+            }
+            // right
+            else if (247.5f < targetAngle && targetAngle <= 292.5f)
+            {
+                _animBlendFront = Mathf.Lerp(_animBlendFront, 0f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, 1f, Time.deltaTime * SpeedChangeRate);
+                _animator.SetFloat(_animParam_Front, _animBlendFront);
+                _animator.SetFloat(_animParam_Right, _animBlendRight);
+
+                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
+                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+            }
+            // backR45
+            else if (202.5f < targetAngle && targetAngle <= 247.5f)
+            {
+                _animBlendFront = Mathf.Lerp(_animBlendFront, -1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, 1f, Time.deltaTime * SpeedChangeRate);
+                _animator.SetFloat(_animParam_Front, _animBlendFront);
+                _animator.SetFloat(_animParam_Right, _animBlendRight);
+
+                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
+                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+            }
+            // back
+            else if (157.5f < targetAngle && targetAngle <= 202.5f)
+            {
+                _animBlendFront = Mathf.Lerp(_animBlendFront, -1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, 0f, Time.deltaTime * SpeedChangeRate);
+                _animator.SetFloat(_animParam_Front, _animBlendFront);
+                _animator.SetFloat(_animParam_Right, _animBlendRight);
+
+                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
+                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+            }
+            // backL45
+            else if (112.5f < targetAngle && targetAngle <= 157.5f)
+            {
+                _animBlendFront = Mathf.Lerp(_animBlendFront, -1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, -1f, Time.deltaTime * SpeedChangeRate);
+                _animator.SetFloat(_animParam_Front, _animBlendFront);
+                _animator.SetFloat(_animParam_Right, _animBlendRight);
+
+                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
+                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+            }
+            // left
+            else if (67.5f < targetAngle && targetAngle <= 112.5f)
+            {
+                _animBlendFront = Mathf.Lerp(_animBlendFront, 0f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, -1f, Time.deltaTime * SpeedChangeRate);
+                _animator.SetFloat(_animParam_Front, _animBlendFront);
+                _animator.SetFloat(_animParam_Right, _animBlendRight);
+
+                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
+                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+            }
+            // frontL45
+            else if (22.5f < targetAngle && targetAngle <= 67.5f)
+            {
+                _animBlendFront = Mathf.Lerp(_animBlendFront, 1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, -1f, Time.deltaTime * SpeedChangeRate);
+                _animator.SetFloat(_animParam_Front, _animBlendFront);
+                _animator.SetFloat(_animParam_Right, _animBlendRight);
+
+                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
+                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+            }
+        }
     }
 
     private void AssignAnimationParameters()
