@@ -64,37 +64,6 @@ Transform:
   - {fileID: 1878326045260318342}
   m_Father: {fileID: 7357150151472756050}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &652134127374585009
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6667904653259769480}
-  m_Layer: 0
-  m_Name: CharacterCameraRoot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6667904653259769480
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 652134127374585009}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.42261827, y: -0, z: -0, w: 0.9063079}
-  m_LocalPosition: {x: 0, y: 10, z: -8}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1902198892983542621}
-  m_LocalEulerAnglesHint: {x: 50, y: 0, z: 0}
 --- !u!1 &655593330282663566
 GameObject:
   m_ObjectHideFlags: 0
@@ -637,12 +606,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3284311385392195114}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6667904653259769480}
   - {fileID: 6817394740362169126}
   - {fileID: 4617428177698944178}
   m_Father: {fileID: 0}
@@ -657,7 +625,7 @@ Animator:
   m_GameObject: {fileID: 3284311385392195114}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 4838ccfd02b84a7b81c0fac73ac43c66, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 82d4404228e5afb4e8c5f542496c8c58, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -737,8 +705,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 009d3d5264f65fa45ab3b589559ebab3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 2
+  moveDirection: {x: 0, y: 0, z: 0}
+  lookDirection: {x: 0, y: 0, z: 0}
+  targDirection: {x: 0, y: 0, z: 0}
+  targetAngle: 0
+  MoveSpeed: 0
   SprintSpeed: 5.335
+  diagonalAngle: 0.71
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   LandingAudioClip: {fileID: 0}
@@ -748,6 +721,7 @@ MonoBehaviour:
   Gravity: -15
   JumpTimeout: 0.5
   FallTimeout: 0.15
+  IdleTimeout: 3
   Grounded: 1
   GroundedOffset: -0.14
   GroundedRadius: 0.28

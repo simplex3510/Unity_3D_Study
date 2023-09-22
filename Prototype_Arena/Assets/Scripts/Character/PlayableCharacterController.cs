@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
 #endif
 
 [RequireComponent(typeof(CharacterController))]
@@ -97,17 +96,6 @@ public class PlayableCharacterController : MonoBehaviour
     private float _terminalVelocity = 53.0f;
 
     // direction
-
-
-    // Vector3 Extention
-    private Vector3 leftVector     = new Vector3(-1f, 0f, 0f).normalized;
-    private Vector3 frontL45Vector = new Vector3(-1f, 0f, 1f).normalized;
-    private Vector3 frontVector    = new Vector3(0f, 0f, 1f).normalized;
-    private Vector3 frontR45Vector = new Vector3(1f, 0f, 1f).normalized;
-    private Vector3 rightVector    = new Vector3(1f, 0f, 0f).normalized;
-    private Vector3 backR45Vector  = new Vector3(1f, 0f, -1f).normalized;
-    private Vector3 backVector     = new Vector3(0f, 0f, -1f).normalized;
-    private Vector3 backL45Vector  = new Vector3(-1f, 0f, -1f).normalized;
 
     // timeout deltatime
     private float _jumpTimeoutDelta;
