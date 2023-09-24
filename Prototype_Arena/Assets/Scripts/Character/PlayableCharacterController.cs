@@ -4,9 +4,10 @@ using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
+using Unity.Netcode;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayableCharacterController : MonoBehaviour
+public class PlayableCharacterController : NetworkBehaviour
 {
     [Header("For Debug")]
     public Vector3 moveDirection;
@@ -118,10 +119,10 @@ public class PlayableCharacterController : MonoBehaviour
 #endif
     private Animator _animator;
     private CharacterController _charController;
-    private PlayerInputSystem _playerInputSystem;
+    private PlayerInputData _playerInputData;
     private Camera _mainCamera;
 
-    private const float _threshold = 0.01f;
+    private const float _threshold = 0.1f;
 
     private bool _hasAnimator;
 
@@ -148,8 +149,8 @@ public class PlayableCharacterController : MonoBehaviour
     private void Start()
     {
         _animator = GetComponent<Animator>();
+        _playerInputData = GetComponent<PlayerInputData>();
         _charController = GetComponent<CharacterController>();
-        _playerInputSystem = GetComponent<PlayerInputSystem>();
 #if ENABLE_INPUT_SYSTEM
         _playerInput = GetComponent<PlayerInput>();
 #else
@@ -161,8 +162,13 @@ public class PlayableCharacterController : MonoBehaviour
 
     private void Update()
     {
-        Rotate();
+        if (IsOwner == false)
+        {
+            return;
+        }
+
         Move();
+        Rotate();
         AnimateMotion();
     }
 
@@ -174,7 +180,7 @@ public class PlayableCharacterController : MonoBehaviour
     private void Move()
     {
         float targetSpeed = MoveSpeed;
-        if (_playerInputSystem.move == Vector2.zero)
+        if (_playerInputData.move == Vector2.zero)
         {
             targetSpeed = 0.0f;
         }
@@ -182,7 +188,7 @@ public class PlayableCharacterController : MonoBehaviour
         float currentHorizontalSpeed = new Vector3(_charController.velocity.x, 0f, _charController.velocity.z).magnitude;
 
         float speedOffest = 0.1f;
-        float inputMagnitude = _playerInputSystem.analogMovement ? _playerInputSystem.move.magnitude : 1.0f;
+        float inputMagnitude = 1.0f;//_netInputData.analogMovement ? _netInputData.move.magnitude : 1.0f;
 
         if (currentHorizontalSpeed < targetSpeed - speedOffest || targetSpeed + speedOffest < currentHorizontalSpeed)
         {
@@ -195,13 +201,13 @@ public class PlayableCharacterController : MonoBehaviour
         }
 
         // Move
-        moveDirection = new Vector3(_playerInputSystem.move.x, 0, _playerInputSystem.move.y);
+        moveDirection = new Vector3(_playerInputData.move.x, 0, _playerInputData.move.y);
         _charController.Move(moveDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
     }
 
     private void Rotate()
     {
-        Ray rayCamera = _mainCamera.ScreenPointToRay(new Vector3(_playerInputSystem.look.x, _playerInputSystem.look.y, _mainCamera.nearClipPlane));
+        Ray rayCamera = _mainCamera.ScreenPointToRay(new Vector3(_playerInputData.look.x, _playerInputData.look.y, _mainCamera.nearClipPlane));
         if (Physics.Raycast(rayCamera, out RaycastHit raycastHit, float.MaxValue, GroundLayers))
         {
             Vector3 mouseDirection = new Vector3(raycastHit.point.x, transform.position.y, raycastHit.point.z);
@@ -218,7 +224,7 @@ public class PlayableCharacterController : MonoBehaviour
         {
             targetAnimThreshold = 3f;
 
-            if (_idleTimeoutDelta < 0.01f)
+            if (_idleTimeoutDelta < 0.1f)
             {
                 _animator.SetBool(_animParam_IsMoving, false);
                 _idleTimeoutDelta += Time.deltaTime;
@@ -238,7 +244,7 @@ public class PlayableCharacterController : MonoBehaviour
         {
             isInit = true;
         }
-        
+
         if (isInit == true)
         {
             _idleTimeoutDelta = 0.0f;
@@ -254,7 +260,7 @@ public class PlayableCharacterController : MonoBehaviour
         {
             targetAngle += 360f;
         }
-        Debug.Log($"angle : {targetAngle}");
+        Debug.Log(targetAngle);
 
         // if has move
         if (moveDirection == Vector3.zero)
@@ -274,41 +280,41 @@ public class PlayableCharacterController : MonoBehaviour
                 _animator.SetFloat(_animParam_Front, _animBlendFront);
                 _animator.SetFloat(_animParam_Right, _animBlendRight);
 
-                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
-                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+                if (-0.1f < _animBlendFront && _animBlendFront < 0.1f) _animBlendFront = 0f;
+                if (-0.1f < _animBlendRight && _animBlendRight < 0.1f) _animBlendRight = 0f;
             }
-            // frontR45
+            // frontL45
             else if (292.5f < targetAngle && targetAngle <= 337.5f)
             {
                 _animBlendFront = Mathf.Lerp(_animBlendFront, 1f, Time.deltaTime * SpeedChangeRate);
-                _animBlendRight = Mathf.Lerp(_animBlendRight, 1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, -1f, Time.deltaTime * SpeedChangeRate);
                 _animator.SetFloat(_animParam_Front, _animBlendFront);
                 _animator.SetFloat(_animParam_Right, _animBlendRight);
 
-                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
-                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+                if (-0.1f < _animBlendFront && _animBlendFront < 0.1f) _animBlendFront = 0f;
+                if (-0.1f < _animBlendRight && _animBlendRight < 0.1f) _animBlendRight = 0f;
             }
-            // right
+            // Left
             else if (247.5f < targetAngle && targetAngle <= 292.5f)
             {
                 _animBlendFront = Mathf.Lerp(_animBlendFront, 0f, Time.deltaTime * SpeedChangeRate);
-                _animBlendRight = Mathf.Lerp(_animBlendRight, 1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, -1f, Time.deltaTime * SpeedChangeRate);
                 _animator.SetFloat(_animParam_Front, _animBlendFront);
                 _animator.SetFloat(_animParam_Right, _animBlendRight);
 
-                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
-                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+                if (-0.1f < _animBlendFront && _animBlendFront < 0.1f) _animBlendFront = 0f;
+                if (-0.1f < _animBlendRight && _animBlendRight < 0.1f) _animBlendRight = 0f;
             }
-            // backR45
+            // backL45
             else if (202.5f < targetAngle && targetAngle <= 247.5f)
             {
                 _animBlendFront = Mathf.Lerp(_animBlendFront, -1f, Time.deltaTime * SpeedChangeRate);
-                _animBlendRight = Mathf.Lerp(_animBlendRight, 1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, -1f, Time.deltaTime * SpeedChangeRate);
                 _animator.SetFloat(_animParam_Front, _animBlendFront);
                 _animator.SetFloat(_animParam_Right, _animBlendRight);
 
-                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
-                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+                if (-0.1f < _animBlendFront && _animBlendFront < 0.1f) _animBlendFront = 0f;
+                if (-0.1f < _animBlendRight && _animBlendRight < 0.1f) _animBlendRight = 0f;
             }
             // back
             else if (157.5f < targetAngle && targetAngle <= 202.5f)
@@ -318,41 +324,41 @@ public class PlayableCharacterController : MonoBehaviour
                 _animator.SetFloat(_animParam_Front, _animBlendFront);
                 _animator.SetFloat(_animParam_Right, _animBlendRight);
 
-                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
-                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+                if (-0.1f < _animBlendFront && _animBlendFront < 0.1f) _animBlendFront = 0f;
+                if (-0.1f < _animBlendRight && _animBlendRight < 0.1f) _animBlendRight = 0f;
             }
-            // backL45
+            // backR45
             else if (112.5f < targetAngle && targetAngle <= 157.5f)
             {
                 _animBlendFront = Mathf.Lerp(_animBlendFront, -1f, Time.deltaTime * SpeedChangeRate);
-                _animBlendRight = Mathf.Lerp(_animBlendRight, -1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, 1f, Time.deltaTime * SpeedChangeRate);
                 _animator.SetFloat(_animParam_Front, _animBlendFront);
                 _animator.SetFloat(_animParam_Right, _animBlendRight);
 
-                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
-                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+                if (-0.1f < _animBlendFront && _animBlendFront < 0.1f) _animBlendFront = 0f;
+                if (-0.1f < _animBlendRight && _animBlendRight < 0.1f) _animBlendRight = 0f;
             }
-            // left
+            // Right
             else if (67.5f < targetAngle && targetAngle <= 112.5f)
             {
                 _animBlendFront = Mathf.Lerp(_animBlendFront, 0f, Time.deltaTime * SpeedChangeRate);
-                _animBlendRight = Mathf.Lerp(_animBlendRight, -1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, 1f, Time.deltaTime * SpeedChangeRate);
                 _animator.SetFloat(_animParam_Front, _animBlendFront);
                 _animator.SetFloat(_animParam_Right, _animBlendRight);
 
-                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
-                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+                if (-0.1f < _animBlendFront && _animBlendFront < 0.1f) _animBlendFront = 0f;
+                if (-0.1f < _animBlendRight && _animBlendRight < 0.1f) _animBlendRight = 0f;
             }
-            // frontL45
+            // frontR45
             else if (22.5f < targetAngle && targetAngle <= 67.5f)
             {
                 _animBlendFront = Mathf.Lerp(_animBlendFront, 1f, Time.deltaTime * SpeedChangeRate);
-                _animBlendRight = Mathf.Lerp(_animBlendRight, -1f, Time.deltaTime * SpeedChangeRate);
+                _animBlendRight = Mathf.Lerp(_animBlendRight, 1f, Time.deltaTime * SpeedChangeRate);
                 _animator.SetFloat(_animParam_Front, _animBlendFront);
                 _animator.SetFloat(_animParam_Right, _animBlendRight);
 
-                if (-0.01f < _animBlendFront && _animBlendFront < 0.01f) _animBlendFront = 0f;
-                if (-0.01f < _animBlendRight && _animBlendRight < 0.01f) _animBlendRight = 0f;
+                if (-0.1f < _animBlendFront && _animBlendFront < 0.1f) _animBlendFront = 0f;
+                if (-0.1f < _animBlendRight && _animBlendRight < 0.1f) _animBlendRight = 0f;
             }
         }
     }
@@ -369,13 +375,13 @@ public class PlayableCharacterController : MonoBehaviour
     private void CameraRotation()
     {
         // if there is an input and camera position is not fixed
-        if (_playerInputSystem.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+        if (_playerInputData.look.sqrMagnitude >= _threshold && !LockCameraPosition)
         {
             //Don't multiply mouse input by Time.deltaTime;
             float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-            _cinemachineTargetYaw += _playerInputSystem.look.x * deltaTimeMultiplier;
-            _cinemachineTargetPitch += _playerInputSystem.look.y * deltaTimeMultiplier;
+            _cinemachineTargetYaw += _playerInputData.look.x * deltaTimeMultiplier;
+            _cinemachineTargetPitch += _playerInputData.look.y * deltaTimeMultiplier;
         }
 
         // clamp our rotations so our values are limited 360 degrees
