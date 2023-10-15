@@ -109,7 +109,7 @@ public class LoginScript : MonoBehaviour
 
                 if (DoesNicknameExist())
                 {
-                    SceneManager.LoadScene("ChatTest-channellist");
+                    SceneManager.LoadScene("LobbyScene");
                 }
                 else
                 {

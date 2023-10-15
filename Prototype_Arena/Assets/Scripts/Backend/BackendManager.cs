@@ -28,8 +28,6 @@ public class BackendManager : MonoBehaviour
         await Task.Run(() => {
             BackendLogin.Instance.CustomLogin("admin", "1234"); // 뒤끝 로그인
 
-            BackendGameData.Instance.GameDataGet(); //[추가] 데이터 불러오기 함수
-
             Debug.Log("테스트를 종료합니다.");
         });
     }
