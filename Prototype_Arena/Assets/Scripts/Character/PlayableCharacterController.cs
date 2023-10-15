@@ -4,10 +4,9 @@ using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
-using Unity.Netcode;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayableCharacterController : NetworkBehaviour
+public class PlayableCharacterController : MonoBehaviour
 {
     [Header("For Debug")]
     public Vector3 moveDirection;
@@ -162,11 +161,6 @@ public class PlayableCharacterController : NetworkBehaviour
 
     private void Update()
     {
-        if (IsOwner == false)
-        {
-            return;
-        }
-
         Move();
         Rotate();
         AnimateMotion();
