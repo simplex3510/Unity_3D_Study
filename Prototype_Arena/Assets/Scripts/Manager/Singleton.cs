@@ -2,28 +2,19 @@ using UnityEngine;
 
 namespace Manager
 {
-    public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+    public class Singleton<T>
     {
-        private static T instance;
+        private static Singleton<T> instance;
 
-        public static T Instance
+        public static Singleton<T> Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    GameObject singleton;
-                    singleton = GameObject.Find(typeof(T).Name);
-                    if (singleton == null)
-                    {
-                        singleton = new GameObject(typeof(T).Name);
-                        instance = singleton.AddComponent<T>();
-                    }
-                    else
-                    {
-                        instance = singleton.GetComponent<T>();
-                    }
+                    instance = new Singleton<T>();
                 }
+
                 return instance;
             }
         }
