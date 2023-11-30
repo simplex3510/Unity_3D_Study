@@ -166,11 +166,6 @@ public class PlayableCharacterController : MonoBehaviour
         AnimateMotion();
     }
 
-    private void LateUpdate()
-    {
-        //CameraRotation();
-    }
-
     private void Move()
     {
         float targetSpeed = MoveSpeed;
@@ -363,42 +358,5 @@ public class PlayableCharacterController : MonoBehaviour
         _animParam_Front = Animator.StringToHash("Front");
         _animParam_Right = Animator.StringToHash("Right");
         _animParam_IsMoving = Animator.StringToHash("IsMoving");
-    }
-
-    [Obsolete("Camera Rotation is replaced other method")]
-    private void CameraRotation()
-    {
-        // if there is an input and camera position is not fixed
-        if (_playerInputData.look.sqrMagnitude >= _threshold && !LockCameraPosition)
-        {
-            //Don't multiply mouse input by Time.deltaTime;
-            float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-
-            _cinemachineTargetYaw += _playerInputData.look.x * deltaTimeMultiplier;
-            _cinemachineTargetPitch += _playerInputData.look.y * deltaTimeMultiplier;
-        }
-
-        // clamp our rotations so our values are limited 360 degrees
-        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-        _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
-        // Cinemachine will follow this target
-        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
-    }
-
-    [Obsolete]
-    private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
-    {
-        if (lfAngle < -360f)
-        {
-            lfAngle += 360f;
-        }
-
-        if (lfAngle > 360f)
-        {
-            lfAngle -= 360f;
-        }
-        
-        return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
 }
