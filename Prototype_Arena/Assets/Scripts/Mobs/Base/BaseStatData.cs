@@ -5,9 +5,6 @@ namespace Base.Mobs.StatData
     [System.Serializable]
     public class BaseStatData
     {
-        [SerializeField] private float skillCoolTime;
-        public float SkillCoolTime { get { return skillCoolTime; } }
-
         [SerializeField] private float maxHP;
         public float MaxHP { get { return maxHP; } }
 

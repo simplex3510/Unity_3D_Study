@@ -5,10 +5,10 @@ namespace Base.Mobs.State
     public enum EState : int
     {
         None = 0,
-        Idle,
-        Move,
+        Walk,
         Attack,
-        Skill,
+        Die,
+        Victory,
         Size
     }
 

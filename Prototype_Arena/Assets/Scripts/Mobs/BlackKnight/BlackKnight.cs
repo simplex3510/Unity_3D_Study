@@ -7,15 +7,16 @@ using Base.Mobs.State;
 
 public partial class BlackKnight : BaseEntity
 {
-    public int AnimParam_Idle { get; private set; }
-    public int AnimParam_Move { get; private set; }
+    public int AnimParam_Walk { get; private set; }
+    public int AnimParam_Damaged { get; private set; }
     public int AnimParam_Attack { get; private set; }
-    public int AnimParam_Skill { get; private set; }
+    public int AnimParam_Die { get; private set; }
+    public int AnimParam_Victory { get; private set; }
 
     private void Awake()
     {
-        curState = EState.Idle;
-        AnimatorCtrller = GetComponent<Animator>();
+        curState = EState.Walk;
+        animController = GetComponent<Animator>();
         StateDict = new Dictionary<EState, IStatable>();
         InitializeStateDict();
         FSM = new FiniteStateMachine(StateDict[curState]);
@@ -32,17 +33,18 @@ public partial class BlackKnight : BaseEntity
 
     protected override void InitializeStateDict()
     {
-        StateDict[EState.Idle] = new BlackKnight_IdleState(this);
-        StateDict[EState.Move] = new BlackKnight_MoveState(this);
+        StateDict[EState.Walk] = new BlackKnight_WalkState(this);
         StateDict[EState.Attack] = new BlackKnight_AttackState(this);
-        StateDict[EState.Skill] = new BlackKnight_SkillState(this);
+        StateDict[EState.Die] = new BlackKnight_DieState(this);
+        StateDict[EState.Victory] = new BlackKnight_VictoryState(this);
     }
 
     protected override void AssignAnimationParameters()
     {
-        AnimParam_Idle = Animator.StringToHash("idle");
-        AnimParam_Move = Animator.StringToHash("move");
-        AnimParam_Attack = Animator.StringToHash("canAttack");
-        AnimParam_Skill = Animator.StringToHash("skill");
+        AnimParam_Attack = Animator.StringToHash("IsTargetInRange");
+        AnimParam_Damaged = Animator.StringToHash("");
+        AnimParam_Die = Animator.StringToHash("");
+        AnimParam_Victory = Animator.StringToHash("");
+        AnimParam_Walk = Animator.StringToHash("");
     }
 }

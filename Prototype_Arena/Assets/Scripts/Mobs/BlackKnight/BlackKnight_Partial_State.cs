@@ -7,72 +7,60 @@ using UnityEngine;
 public partial class BlackKnight
 {
     #region public State Method
-    public void CheckNearestEnemy()
+    public bool CheckTargetInRange()
     {
 
-        return;
+        return false;
     }
 
     public void MoveToTarget()
     {
-        if (target == null)
-        {
-            Debug.LogError("Can not Move to Target That is null");
-            return;
-        }
-
-        transform.position = Vector2.MoveTowards(transform.position, target.transform.position, StatData.SPD * Time.deltaTime);
-        //transform.Translate(StatData.SPD * Time.deltaTime * target.transform.position);
+        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, StatData.SPD * Time.deltaTime);
+        transform.LookAt(target.transform);
     }
 
     public override void AttackTarget()
     {
-        if (target.StatData.DEAD == true)
-        {
-            CheckNearestEnemy();
-        }
-        else
-        {
-            target.DamagedCharacter(StatData.ATK);
-        }
+
     }
 
-    public override void DamagedCharacter(float damage)
+    public override void DamagedEntity(float damage)
     {
-
+        StatData.CurHP -= damage;
+        AnimController.SetTrigger(AnimParam_Damaged);
     }
     #endregion
 
     #region protected Method
     protected override IEnumerator UpdateFSM()
     {
-        Debug.Log("Wait UpdateFSM");
-        yield return new WaitForSeconds(3f);
-        Debug.Log("Start UpdateFSM");
-
         Collider2D detectedTarget;
 
         while (true)
         {
             switch (curState)
             {
-                case EState.Idle:
-                    break;
-
-                case EState.Move:
+                case EState.Walk:
+                    if (CheckTargetInRange() == true)
+                    {
+                        ChangeState(EState.Attack);
+                    }
                     break;
 
                 case EState.Attack:
-                    break;
-
-                case EState.Skill:
+                    if (CheckTargetInRange() == false)
+                    {
+                        ChangeState(EState.Walk);
+                    }
                     break;
 
                 default:
                     Debug.LogError("UpdateFSM Error");
                     break;
             }
+
             FSM.UpdateState();
+
             yield return null;
         }
     }
@@ -83,17 +71,17 @@ public partial class BlackKnight
 
         switch (curState)
         {
-            case EState.Idle:
-                FSM.ChangeState(StateDict[EState.Idle]);
-                break;
-            case EState.Move:
-                FSM.ChangeState(StateDict[EState.Move]);
+            case EState.Walk:
+                FSM.ChangeState(StateDict[EState.Walk]);
                 break;
             case EState.Attack:
                 FSM.ChangeState(StateDict[EState.Attack]);
                 break;
-            case EState.Skill:
-                FSM.ChangeState(StateDict[EState.Skill]);
+            case EState.Die:
+                FSM.ChangeState(StateDict[EState.Die]);
+                break;
+            case EState.Victory:
+                FSM.ChangeState(StateDict[EState.Victory]);
                 break;
             default:
                 Debug.LogError("ChangeState Error");

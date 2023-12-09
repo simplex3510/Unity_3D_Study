@@ -10,12 +10,14 @@ namespace Base.Mobs.Entity
     public interface IDamagable
     {
         public void AttackTarget();
-        public void DamagedCharacter(float damage);
+        public void DamagedEntity(float damage);
     }
 
     public abstract class BaseEntity : MonoBehaviour, IDamagable
     {
-        public Animator AnimatorCtrller { get; protected set; }
+        [SerializeField]
+        protected Animator animController;
+        public Animator AnimController { get { return animController; } }
 
         protected EState curState;
         protected Dictionary<EState, IStatable> StateDict { get; set; }
@@ -26,7 +28,7 @@ namespace Base.Mobs.Entity
         public BaseStatData StatData { get { return statData; } }
 
         [SerializeField]
-        protected BaseEntity target;
+        protected GameObject target;
         [SerializeField]
         protected LayerMask EnemyLayerMask;
 
@@ -36,6 +38,6 @@ namespace Base.Mobs.Entity
         protected abstract void ChangeState(EState eState);
 
         public abstract void AttackTarget();
-        public abstract void DamagedCharacter(float damage);
+        public abstract void DamagedEntity(float damage);
     }
 }

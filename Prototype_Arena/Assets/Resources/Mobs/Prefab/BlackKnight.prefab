@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1380190456450340097}
   - component: {fileID: 7766498757642078727}
+  - component: {fileID: 7729290310715979160}
+  - component: {fileID: 6134222531347267528}
   m_Layer: 0
   m_Name: BlackKnight
   m_TagString: Untagged
@@ -45,18 +47,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d07cec3d5649de43a2bd250554b4146, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animController: {fileID: 1596387747578929782}
   statData:
-    skillCoolTime: 0
     maxHP: 0
     curHP: 0
     attack: 0
     defensive: 0
-    speed: 0
+    speed: 1
     dead: 0
   target: {fileID: 0}
   EnemyLayerMask:
     serializedVersion: 2
+    m_Bits: 128
+--- !u!54 &7729290310715979160
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511697579197359670}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
     m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
+--- !u!65 &6134222531347267528
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511697579197359670}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.13, y: 2.1860247, z: 1.4011133}
+  m_Center: {x: 0, y: 1.1430123, z: 0.22601148}
 --- !u!1001 &1596387747586283286
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -109,11 +159,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9500000, guid: cbe7fb42d1e21e944b65df93ca3d0784, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: ad29136dfb1e1f24cb140650e9f04a2c, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cbe7fb42d1e21e944b65df93ca3d0784, type: 3}
+--- !u!95 &1596387747578929782 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 9500000, guid: cbe7fb42d1e21e944b65df93ca3d0784,
+    type: 3}
+  m_PrefabInstance: {fileID: 1596387747586283286}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1596387747586411922 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400004, guid: cbe7fb42d1e21e944b65df93ca3d0784,
