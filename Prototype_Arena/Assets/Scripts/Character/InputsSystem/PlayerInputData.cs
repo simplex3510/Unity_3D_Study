@@ -1,6 +1,7 @@
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using static UnityEngine.Rendering.DebugUI;
 #endif
 
 public class PlayerInputData : MonoBehaviour
@@ -71,10 +72,18 @@ public class PlayerInputData : MonoBehaviour
     {
         LeftAttackInput();
     }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     public void OnRightAttack()
     {
         RightAttackInput();
     }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     public void OnDash()
     {
         DashInput();

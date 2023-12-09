@@ -3651,42 +3651,67 @@ PrefabInstance:
         type: 3}
       propertyPath: _skills.Array.data[0]
       value: 
+<<<<<<< Updated upstream
       objectReference: {fileID: 11400000, guid: 3a22a473675ea7841beb035dd2318b1e,
+=======
+      objectReference: {fileID: 11400000, guid: ac5897541419dea40b8c0df83e9c3841,
+>>>>>>> Stashed changes
         type: 2}
     - target: {fileID: 3698079568483643649, guid: c0575780581c35949b914218436c0717,
         type: 3}
       propertyPath: _skills.Array.data[1]
       value: 
+<<<<<<< Updated upstream
       objectReference: {fileID: 11400000, guid: cbda7a12417ce244eb0874ff4ad92fda,
+=======
+      objectReference: {fileID: 11400000, guid: 730b55c168344144b98ff35cb2e2be6e,
+>>>>>>> Stashed changes
         type: 2}
     - target: {fileID: 3698079568483643649, guid: c0575780581c35949b914218436c0717,
         type: 3}
       propertyPath: _skills.Array.data[2]
       value: 
+<<<<<<< Updated upstream
       objectReference: {fileID: 11400000, guid: 59da2f4a0b2da934eb7ea0f3e3675eef,
+=======
+      objectReference: {fileID: 11400000, guid: a0f79a4b53784784a90bc9357f65b4c3,
+>>>>>>> Stashed changes
         type: 2}
     - target: {fileID: 3698079568483643649, guid: c0575780581c35949b914218436c0717,
         type: 3}
       propertyPath: _skills.Array.data[3]
       value: 
+<<<<<<< Updated upstream
       objectReference: {fileID: 11400000, guid: f75ea996c3d308e498e3a7a98b3238c0,
+=======
+      objectReference: {fileID: 11400000, guid: cb985d662a012df469b5b9bb957a16c8,
+>>>>>>> Stashed changes
         type: 2}
     - target: {fileID: 3698079568483643649, guid: c0575780581c35949b914218436c0717,
         type: 3}
       propertyPath: _skills.Array.data[4]
       value: 
+<<<<<<< Updated upstream
       objectReference: {fileID: 11400000, guid: 3e5e6a61673ed9d4db12c11929f5d853,
+=======
+      objectReference: {fileID: 11400000, guid: 15a0a863a26fa57448e9244105138af8,
+>>>>>>> Stashed changes
         type: 2}
     - target: {fileID: 3698079568483643649, guid: c0575780581c35949b914218436c0717,
         type: 3}
       propertyPath: _skills.Array.data[5]
       value: 
+<<<<<<< Updated upstream
       objectReference: {fileID: 11400000, guid: fe3193ed98e3eaa4189b16cdbe870901,
+=======
+      objectReference: {fileID: 11400000, guid: e6acef2f00d40aa4ebe78091c0432a4c,
+>>>>>>> Stashed changes
         type: 2}
     - target: {fileID: 3698079568483643649, guid: c0575780581c35949b914218436c0717,
         type: 3}
       propertyPath: _skills.Array.data[6]
       value: 
+<<<<<<< Updated upstream
       objectReference: {fileID: 11400000, guid: 7af409e9997b546459c90234df6a525b,
         type: 2}
     - target: {fileID: 3698079568483643649, guid: c0575780581c35949b914218436c0717,
@@ -3730,11 +3755,15 @@ PrefabInstance:
       propertyPath: _skills.Array.data[13]
       value: 
       objectReference: {fileID: 11400000, guid: 7af409e9997b546459c90234df6a525b,
+=======
+      objectReference: {fileID: 11400000, guid: d19938a7c0ebc5c4cbcd3a9dc32dc4ab,
+>>>>>>> Stashed changes
         type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+<<<<<<< Updated upstream
     - targetCorrespondingSourceObject: {fileID: 3284311385392195114, guid: c0575780581c35949b914218436c0717,
         type: 3}
       insertIndex: -1
@@ -3753,6 +3782,59 @@ PrefabInstance:
       addedObject: {fileID: 1054511436}
   m_SourcePrefab: {fileID: 100100000, guid: c0575780581c35949b914218436c0717, type: 3}
 --- !u!1 &1654575621 stripped
+=======
+    - targetCorrespondingSourceObject: {fileID: 6136769252325520179, guid: c0575780581c35949b914218436c0717,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1662742352}
+    - targetCorrespondingSourceObject: {fileID: 6136769252325520179, guid: c0575780581c35949b914218436c0717,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1662742351}
+  m_SourcePrefab: {fileID: 100100000, guid: c0575780581c35949b914218436c0717, type: 3}
+--- !u!1 &1662742347 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6136769252325520179, guid: c0575780581c35949b914218436c0717,
+    type: 3}
+  m_PrefabInstance: {fileID: 1654575620}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1662742351
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662742347}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 7029833401156651362, guid: 4838ccfd02b84a7b81c0fac73ac43c66, type: 3}
+--- !u!114 &1662742352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662742347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b2532186fd10674cb6e02b4bbf3b11b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshCollider: {fileID: 1662742351}
+--- !u!1 &1662811884
+>>>>>>> Stashed changes
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3284311385392195114, guid: c0575780581c35949b914218436c0717,
     type: 3}

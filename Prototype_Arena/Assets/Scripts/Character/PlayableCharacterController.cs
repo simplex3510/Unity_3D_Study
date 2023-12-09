@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
+using UnityEngine.SocialPlatforms.Impl;
 #endif
 
 [RequireComponent(typeof(CharacterController))]
@@ -168,7 +169,11 @@ public class PlayableCharacterController : MonoBehaviour
         {
             _mainCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         }
+<<<<<<< Updated upstream
         if(_sword == null)
+=======
+        if (_sword == null)
+>>>>>>> Stashed changes
         {
             _sword = GetComponentInChildren<Sword>();
         }
@@ -188,7 +193,11 @@ public class PlayableCharacterController : MonoBehaviour
         _skillCammand = "";
         AssignAnimationParameters();
 
+<<<<<<< Updated upstream
         for(int i = 0; i < _skills.Length; i++)
+=======
+        for (int i = 0; i < _skills.Length; i++)
+>>>>>>> Stashed changes
         {
             _skills[i].skillLevel = 1;
         }
@@ -207,13 +216,21 @@ public class PlayableCharacterController : MonoBehaviour
 
     private void UseSkill()
     {
+<<<<<<< Updated upstream
         for(int i = _skills.Length - 1; i >= 0; i--)
+=======
+        for (int i = _skills.Length - 1; i >= 0; i--)
+>>>>>>> Stashed changes
         {
             if (_skillCammand.EndsWith(_skills[i].skillCommand))
             {
                 if (_skills[i].skillLevel > 0)
                 {
+<<<<<<< Updated upstream
                     if(CommandCoroutine != null)
+=======
+                    if (CommandCoroutine != null)
+>>>>>>> Stashed changes
                         StopCoroutine(CommandCoroutine);
                     isAttack = true;
                     _sword.Use(_skills[i].skillAnimationTime);
@@ -233,7 +250,11 @@ public class PlayableCharacterController : MonoBehaviour
             _skillCammand += 'L';
             CommandCoroutine = StartCoroutine(ClearCommand());
             UseSkill();
+<<<<<<< Updated upstream
             if(!isAttack)
+=======
+            if (!isAttack)
+>>>>>>> Stashed changes
             {
                 isAttack = true;
                 _sword.Use(_leftAttackTime);
@@ -251,7 +272,11 @@ public class PlayableCharacterController : MonoBehaviour
             _skillCammand += 'R';
             CommandCoroutine = StartCoroutine(ClearCommand());
             UseSkill();
+<<<<<<< Updated upstream
             if(!isAttack)
+=======
+            if (!isAttack)
+>>>>>>> Stashed changes
             {
                 isAttack = true;
                 _sword.Use(_RightattackTime);

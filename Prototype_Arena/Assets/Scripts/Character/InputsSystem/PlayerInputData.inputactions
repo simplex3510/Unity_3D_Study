@@ -26,7 +26,11 @@
                 {
                     "name": "LeftAttack",
                     "type": "Button",
+<<<<<<< Updated upstream
                     "id": "25fe0d4f-28cd-4d90-979f-169dc28ceecb",
+=======
+                    "id": "4068fba6-3c75-4293-b851-5963d5b370c2",
+>>>>>>> Stashed changes
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -35,7 +39,11 @@
                 {
                     "name": "RightAttack",
                     "type": "Button",
+<<<<<<< Updated upstream
                     "id": "90c5387e-be9e-4fcb-a549-86aabf359951",
+=======
+                    "id": "e620ee22-a115-40d3-90f5-4c0a8ba3e40a",
+>>>>>>> Stashed changes
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -44,7 +52,11 @@
                 {
                     "name": "Dash",
                     "type": "Button",
+<<<<<<< Updated upstream
                     "id": "acdee911-c98f-4b1c-b345-9555439b439d",
+=======
+                    "id": "91abafad-ea27-4fee-8ac2-a0efb25ad7a5",
+>>>>>>> Stashed changes
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -120,33 +132,57 @@
                 },
                 {
                     "name": "",
+<<<<<<< Updated upstream
                     "id": "9fa40dc5-5ffe-413b-9ffb-505ce8d679f4",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "PC",
+=======
+                    "id": "5e893e84-3434-425c-bba5-6b6b71ab81f9",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+>>>>>>> Stashed changes
                     "action": "LeftAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
+<<<<<<< Updated upstream
                     "id": "6d9ff010-79eb-404a-badb-9c47780bc7c9",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "PC",
+=======
+                    "id": "9ae29ab7-5b6d-4ef6-bf62-57d22ee921d3",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+>>>>>>> Stashed changes
                     "action": "RightAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
+<<<<<<< Updated upstream
                     "id": "6051919d-6f60-4866-9f30-5d9f7c2561cd",
                     "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
                     "groups": "PC",
+=======
+                    "id": "21ecc923-3d3d-492a-b99c-507e510d9f50",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+>>>>>>> Stashed changes
                     "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
