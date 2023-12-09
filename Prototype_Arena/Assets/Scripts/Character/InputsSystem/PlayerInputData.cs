@@ -10,6 +10,9 @@ public class PlayerInputData : MonoBehaviour
     public Vector2 look;
     public bool jump;
     public bool sprint;
+    public bool leftAttack;
+    public bool rightAttack;
+    public bool dash;
 
     [Header("Movement Setting")]
     public bool analogMovement;
@@ -40,6 +43,21 @@ public class PlayerInputData : MonoBehaviour
         sprint = newSprintState;
     }
 
+    public void LeftAttackInput()
+    {
+        leftAttack = true;
+    }
+
+    public void RightAttackInput()
+    {
+        rightAttack = true;
+    }
+
+    public void DashInput()
+    {
+        dash = true;
+    }
+
 #if ENABLE_INPUT_SYSTEM
     public void OnMove(InputValue value)
     {
@@ -49,6 +67,30 @@ public class PlayerInputData : MonoBehaviour
     public void OnLook(InputValue value)
     {
         LookInput(value.Get<Vector2>());
+    }
+
+    public void OnLeftAttack()
+    {
+        if (PlayableCharacterController.isAttack || PlayableCharacterController.isDash)
+            return;
+
+        LeftAttackInput();
+    }
+
+    public void OnRightAttack()
+    {
+        if (PlayableCharacterController.isAttack || PlayableCharacterController.isDash)
+            return;
+
+        RightAttackInput();
+    }
+
+    public void OnDash()
+    {
+        if (PlayableCharacterController.isAttack || PlayableCharacterController.isDash)
+            return;
+
+        DashInput();
     }
 #endif
     #endregion

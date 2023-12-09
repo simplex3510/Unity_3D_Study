@@ -1,8 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEditor.VersionControl;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
+using UnityEngine.SocialPlatforms.Impl;
+using static Cinemachine.DocumentationSortingAttribute;
 #endif
 
 [RequireComponent(typeof(CharacterController))]
@@ -94,6 +98,12 @@ public class PlayableCharacterController : MonoBehaviour
     private float _rotationVelocity;
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
+    private const float _leftAttackTime = 0.9f;
+    private const float _RightattackTime = 1.25f;
+    private const float _DashTime = 5f;
+    public static bool isAttack;
+    public static bool isDash;
+    private bool canDash;
 
     // direction
 
@@ -120,6 +130,26 @@ public class PlayableCharacterController : MonoBehaviour
     private CharacterController _charController;
     private PlayerInputData _playerInputData;
     private Camera _mainCamera;
+    private Sword _sword;
+    [SerializeField]
+    private List<SkillData> _skills = new List<SkillData>();
+    
+    [SerializeField]
+    private List<SkillData> _unlockSkills = new List<SkillData>();
+    public List<SkillData> UnlockSkills
+    {
+        get { return _unlockSkills; }
+        set { _unlockSkills = value; }
+    }
+
+    Coroutine CommandCoroutine = null;
+
+    [SerializeField]
+    private string _skillCammand;
+    public string SkillCammand
+    {
+        set { _skillCammand = value; }
+    }
 
     private const float _threshold = 0.1f;
 
@@ -143,6 +173,13 @@ public class PlayableCharacterController : MonoBehaviour
         {
             _mainCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         }
+        if (_sword == null)
+        {
+            _sword = GetComponentInChildren<Sword>();
+        }
+
+        foreach(SkillData skill in _skills)
+            skill.skillLevel = 0;
     }
 
     private void Start()
@@ -150,6 +187,15 @@ public class PlayableCharacterController : MonoBehaviour
         _animator = GetComponent<Animator>();
         _playerInputData = GetComponent<PlayerInputData>();
         _charController = GetComponent<CharacterController>();
+        _skillCammand = "";
+        canDash = true;
+        foreach(SkillData skillData in _skills)
+        {
+            if(skillData.isUnlock)
+            {
+                _unlockSkills.Add(skillData);
+            }
+        }
 #if ENABLE_INPUT_SYSTEM
         _playerInput = GetComponent<PlayerInput>();
 #else
@@ -161,9 +207,125 @@ public class PlayableCharacterController : MonoBehaviour
 
     private void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            SkillManager.instance.LevelUp();
+        }
+
+        Dash();
         Move();
+        LeftAttack();
+        RightAttack();
         Rotate();
         AnimateMotion();
+    }
+    private void UseSkill()
+    {
+        for (int i = _unlockSkills.Count - 1; i >= 0; i--)
+
+        {
+            if (_skillCammand.EndsWith(_unlockSkills[i].skillCommand))
+            {
+                if (_unlockSkills[i].skillLevel > 0)
+                {
+                    if (CommandCoroutine != null)
+                        StopCoroutine(CommandCoroutine);
+                    isAttack = true;
+                    _sword.Use(_skills[i].skillAnimationTime);
+                    StartCoroutine(AttackEnd(_skills[i].skillAnimationTime, _skills[i].skillAnimationTrigger));
+                    _skillCammand = "";
+                    break;
+                }
+            }
+        }
+    }
+
+    private void LeftAttack()
+    {
+        if (_playerInputData.leftAttack && !isAttack && !isDash)
+        {
+            if (CommandCoroutine != null)
+                StopCoroutine(CommandCoroutine);
+            _skillCammand += 'L';
+            CommandCoroutine = StartCoroutine(ClearCommand());
+            UseSkill();
+            if (!isAttack)
+            {
+                isAttack = true;
+                _sword.Use(_leftAttackTime);
+                StartCoroutine(AttackEnd(_leftAttackTime, "IsLeftAttack"));
+            }
+            _playerInputData.leftAttack = false;
+        }
+    }
+
+    private void RightAttack()
+    {
+        if (_playerInputData.rightAttack && !isAttack && !isDash)
+        {
+            if (CommandCoroutine != null)
+                StopCoroutine(CommandCoroutine);
+            _skillCammand += 'R';
+            CommandCoroutine = StartCoroutine(ClearCommand());
+            UseSkill();
+            if (!isAttack)
+            {
+                isAttack = true;
+                _sword.Use(_RightattackTime);
+                StartCoroutine(AttackEnd(_RightattackTime, "IsRightAttack"));
+            }
+            _playerInputData.rightAttack = false;
+        }
+    }
+
+    IEnumerator AttackEnd(float attackTime, string animationBool)
+    {
+        _animator.SetBool("IsAttack", true);
+        _animator.SetBool(animationBool, true);
+        yield return new WaitForSeconds(attackTime);
+        isAttack = false;
+        _animator.SetBool(animationBool, false);
+        _animator.SetBool("IsAttack", false);
+    }
+    IEnumerator ClearCommand()
+    {
+        yield return new WaitForSeconds(7);
+        _skillCammand = "";
+    }
+
+    private void Dash()
+    {
+        if (_playerInputData.dash && !canDash)
+            _playerInputData.dash = false;
+        if (_playerInputData.dash && !isAttack && !isDash && canDash)
+        {
+            if (CommandCoroutine != null)
+                StopCoroutine(CommandCoroutine);
+            _skillCammand += 'S';
+            CommandCoroutine = StartCoroutine(ClearCommand());
+            isDash = true;
+            canDash = false;
+            StartCoroutine(Dashing(lookDirection));
+            StartCoroutine(DashEnd());
+            _playerInputData.dash = false;
+        }
+    }
+
+    IEnumerator Dashing(Vector3 dashDirection)
+    {
+        _animator.SetBool("IsDash", true);
+        _charController.Move(dashDirection * 0.5f);
+        yield return new WaitForSeconds(0.005f);
+        _charController.Move(dashDirection * 0.2f);
+        yield return new WaitForSeconds(0.005f);
+        _animator.SetBool("IsDash", false);
+        isDash = false;
+    }
+
+    IEnumerator DashEnd()
+    {
+        yield return new WaitForSeconds(_DashTime);
+        canDash = true;
     }
 
     private void Move()

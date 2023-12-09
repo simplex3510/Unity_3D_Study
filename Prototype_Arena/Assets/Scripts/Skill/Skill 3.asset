@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 134e76c84ceed754fb281d10bb001351, type: 3}
+  m_Name: Skill 3
+  m_EditorClassIdentifier: 
+  skillId: 3
+  skillName: "3\uBC88"
+  skillDescription: "3\uBC883\uBC88"
+  skillCommand: LRR
+  isUnlock: 1
+  skillAnimationTrigger: IsSkillLRR
+  skillAnimationTime: 1.4335
+  childSkill:
+  - {fileID: 11400000, guid: 03249dbb8e4c70d4db4b630cc8b49d99, type: 2}
+  - {fileID: 11400000, guid: a204b7a264b7e354682ab7965efa32e5, type: 2}
+  skillLevel: 0
+  maxLevel: 5
+  baseDamage: 0
+  damages: []
