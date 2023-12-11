@@ -9,21 +9,28 @@ public partial class BlackKnight
     #region public State Method
     public bool CheckTargetInRange()
     {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 2.0f, EnemyLayerMask);
+        if (colliders.Length != 0)
+        {
+            return true;
+        }
 
         return false;
     }
-
     public void MoveToTarget()
     {
-        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, StatData.SPD * Time.deltaTime);
-        transform.LookAt(target.transform);
+        transform.position = Vector3.MoveTowards(transform.position, targetChar.transform.position, StatData.SPD * Time.deltaTime);
+        transform.LookAt(targetChar.transform);
     }
-
     public override void AttackTarget()
     {
+        if (targetIDam == null)
+        {
+            targetIDam = targetChar.GetComponent<IDamagable>();
+        }
 
+        // targetIDam.DamagedEntity(10);
     }
-
     public override void DamagedEntity(float damage)
     {
         StatData.CurHP -= damage;
@@ -34,10 +41,20 @@ public partial class BlackKnight
     #region protected Method
     protected override IEnumerator UpdateFSM()
     {
-        Collider2D detectedTarget;
-
         while (true)
         {
+            if (StatData.DEAD == true)
+            {
+                AnimController.SetTrigger(AnimParam_Die);
+                yield break;
+            }
+
+            if (targetChar.activeSelf == false)
+            {
+                animController.SetTrigger(AnimParam_Victory);
+                yield break;
+            }
+
             switch (curState)
             {
                 case EState.Walk:

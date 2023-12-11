@@ -16,7 +16,6 @@ public partial class BlackKnight : BaseEntity
     private void Awake()
     {
         curState = EState.Walk;
-        animController = GetComponent<Animator>();
         StateDict = new Dictionary<EState, IStatable>();
         InitializeStateDict();
         FSM = new FiniteStateMachine(StateDict[curState]);

@@ -28,7 +28,8 @@ namespace Base.Mobs.Entity
         public BaseStatData StatData { get { return statData; } }
 
         [SerializeField]
-        protected GameObject target;
+        protected GameObject targetChar;
+        protected IDamagable targetIDam;
         [SerializeField]
         protected LayerMask EnemyLayerMask;
 

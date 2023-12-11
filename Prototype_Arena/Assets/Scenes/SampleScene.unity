@@ -2490,6 +2490,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlackKnight
       objectReference: {fileID: 0}
+    - target: {fileID: 7766498757642078727, guid: 08cdd07e8fde47640861ab54e96dca94,
+        type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 2105569336}
+    - target: {fileID: 7766498757642078727, guid: 08cdd07e8fde47640861ab54e96dca94,
+        type: 3}
+      propertyPath: targetChar
+      value: 
+      objectReference: {fileID: 2105569336}
+    - target: {fileID: 7766498757642078727, guid: 08cdd07e8fde47640861ab54e96dca94,
+        type: 3}
+      propertyPath: statData.curHP
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7766498757642078727, guid: 08cdd07e8fde47640861ab54e96dca94,
+        type: 3}
+      propertyPath: statData.maxHP
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2557,6 +2577,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlayableCharacter
+      objectReference: {fileID: 0}
+    - target: {fileID: 3284311385392195114, guid: c0575780581c35949b914218436c0717,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3284311385392195114, guid: c0575780581c35949b914218436c0717,
+        type: 3}
+      propertyPath: m_TagString
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 3698079568483643649, guid: c0575780581c35949b914218436c0717,
         type: 3}

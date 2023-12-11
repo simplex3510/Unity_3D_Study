@@ -12,11 +12,13 @@ public class BlackKnight_AttackState : BaseState
 
     public override void OnStateExit()
     {
-
+        BlackKnight mob = entity as BlackKnight;
+        mob.AnimController.SetBool(mob.AnimParam_Attack, false);
     }
 
     public override void OnStateUpdate()
     {
-
+        BlackKnight mob = entity as BlackKnight;
+        mob.AttackTarget();
     }
 }
