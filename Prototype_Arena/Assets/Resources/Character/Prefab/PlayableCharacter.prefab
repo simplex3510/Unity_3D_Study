@@ -734,6 +734,9 @@ MonoBehaviour:
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 1
+  _skills: []
+  _unlockSkills: []
+  _skillCammand: 
 --- !u!114 &8657972604012039904
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -750,6 +753,9 @@ MonoBehaviour:
   look: {x: 0, y: 0}
   jump: 0
   sprint: 0
+  leftAttack: 0
+  rightAttack: 0
+  dash: 0
   analogMovement: 0
   cursorLocked: 0
   cursorInputForLook: 0

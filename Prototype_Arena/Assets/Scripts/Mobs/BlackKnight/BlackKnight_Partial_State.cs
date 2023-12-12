@@ -76,6 +76,9 @@ public partial class BlackKnight
                     break;
             }
 
+            if (Life <= 0)
+                ChangeState(EState.Die);
+
             FSM.UpdateState();
 
             yield return null;

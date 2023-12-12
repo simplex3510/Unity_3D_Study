@@ -13,14 +13,16 @@ MonoBehaviour:
   m_Name: Skill 8
   m_EditorClassIdentifier: 
   skillId: 8
-  skillName: "8\uBC88"
-  skillDescription: "8\uBC888\uBC88"
+  skillName: "\uAC70\uD569 \uBCA0\uAE30"
+  skillImage: {fileID: 21300000, guid: 3c58ae5539306214ab6cc7f622faa954, type: 3}
+  skillDescription: "\uCE7C\uC744 \uD06C\uAC8C \uB450 \uBC88 \uD718\uB458\uB7EC\uC11C
+    \uC8FC\uC704\uC758 \uC801\uC5D0\uAC8C 100\uC758 \uB370\uBBF8\uC9C0\uB97C \uC90D\uB2C8\uB2E4."
   skillCommand: LSRSL
   isUnlock: 0
   skillAnimationTrigger: IsSkillLSRSL
   skillAnimationTime: 1.3335
   childSkill: []
   skillLevel: 0
-  maxLevel: 1
-  baseDamage: 0
-  damages: []
+  maxLevel: 3
+  baseDamage: 80
+  ad: 20

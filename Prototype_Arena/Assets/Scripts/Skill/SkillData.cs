@@ -8,6 +8,7 @@ public class SkillData : ScriptableObject
     [Header("# Main Info")]
     public int skillId;
     public string skillName;
+    public Sprite skillImage;
     public string skillDescription;
     public string skillCommand;
     public bool isUnlock;
@@ -19,5 +20,5 @@ public class SkillData : ScriptableObject
     public int skillLevel;
     public int maxLevel;
     public float baseDamage;
-    public float[] damages;
+    public int ad;
 }

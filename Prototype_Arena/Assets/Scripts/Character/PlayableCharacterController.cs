@@ -99,11 +99,19 @@ public class PlayableCharacterController : MonoBehaviour
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
     private const float _leftAttackTime = 0.9f;
+    private const float _leftAtk = 50f;
+    private const float _rightAtk = 100f;
     private const float _RightattackTime = 1.25f;
     private const float _DashTime = 5f;
     public static bool isAttack;
     public static bool isDash;
     private bool canDash;
+    [SerializeField]
+    private float _Life = 200f;
+    public float Life
+    {
+        get { return _Life; }
+    }
 
     // direction
 
@@ -148,6 +156,7 @@ public class PlayableCharacterController : MonoBehaviour
     private string _skillCammand;
     public string SkillCammand
     {
+        get { return _skillCammand; }
         set { _skillCammand = value; }
     }
 
@@ -231,7 +240,7 @@ public class PlayableCharacterController : MonoBehaviour
                     if (CommandCoroutine != null)
                         StopCoroutine(CommandCoroutine);
                     isAttack = true;
-                    _sword.Use(_skills[i].skillAnimationTime);
+                    _sword.Use(_skills[i].skillAnimationTime, _skills[i].baseDamage + _skills[i].skillLevel * _skills[i].ad);
                     StartCoroutine(AttackEnd(_skills[i].skillAnimationTime, _skills[i].skillAnimationTrigger));
                     _skillCammand = "";
                     break;
@@ -252,7 +261,7 @@ public class PlayableCharacterController : MonoBehaviour
             if (!isAttack)
             {
                 isAttack = true;
-                _sword.Use(_leftAttackTime);
+                _sword.Use(_leftAttackTime, _leftAtk);
                 StartCoroutine(AttackEnd(_leftAttackTime, "IsLeftAttack"));
             }
             _playerInputData.leftAttack = false;
@@ -271,7 +280,7 @@ public class PlayableCharacterController : MonoBehaviour
             if (!isAttack)
             {
                 isAttack = true;
-                _sword.Use(_RightattackTime);
+                _sword.Use(_RightattackTime, _rightAtk);
                 StartCoroutine(AttackEnd(_RightattackTime, "IsRightAttack"));
             }
             _playerInputData.rightAttack = false;
@@ -520,5 +529,10 @@ public class PlayableCharacterController : MonoBehaviour
         _animParam_Front = Animator.StringToHash("Front");
         _animParam_Right = Animator.StringToHash("Right");
         _animParam_IsMoving = Animator.StringToHash("IsMoving");
+    }
+
+    public void Damage(float damage)
+    {
+        _Life -= damage;
     }
 }

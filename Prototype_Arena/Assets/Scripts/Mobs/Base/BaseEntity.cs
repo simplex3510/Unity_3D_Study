@@ -32,6 +32,8 @@ namespace Base.Mobs.Entity
         protected IDamagable targetIDam;
         [SerializeField]
         protected LayerMask EnemyLayerMask;
+        [SerializeField]
+        protected int Life;
 
         protected abstract void InitializeStateDict();
         protected abstract void AssignAnimationParameters();

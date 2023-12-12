@@ -11,6 +11,7 @@ public class SkillManager : MonoBehaviour
     public GameObject[] choices = new GameObject[3];
     public List<int> LevelUpSkill;
     public GameObject LevelBase;
+    public Text CommandText;
 
     private void Awake()
     {
@@ -21,6 +22,11 @@ public class SkillManager : MonoBehaviour
     private void Start()
     {
         playableCharacterController = player.GetComponent<PlayableCharacterController>();
+    }
+
+    private void Update()
+    {
+        CommandText.text = "Command: " + player.GetComponent<PlayableCharacterController>().SkillCammand;
     }
 
     public void LevelUp()
@@ -49,10 +55,18 @@ public class SkillManager : MonoBehaviour
     {
         for(int i = 0; i < choices.Length; i++)
         {
+            choices[i].transform.GetChild(0).GetComponent<Image>().sprite = playableCharacterController.UnlockSkills[LevelUpSkill[i]].skillImage;
+
             choices[i].transform.GetChild(1).GetComponent<Text>().text =
                 playableCharacterController.UnlockSkills[LevelUpSkill[i]].skillName.ToString() + '(' + playableCharacterController.UnlockSkills[LevelUpSkill[i]].skillCommand.ToString() + ')' + " Lv." + playableCharacterController.UnlockSkills[LevelUpSkill[i]].skillLevel;
-            choices[i].transform.GetChild(2).GetComponent<Text>().text =
-                playableCharacterController.UnlockSkills[LevelUpSkill[i]].skillDescription.ToString();
+
+            if (playableCharacterController.UnlockSkills[LevelUpSkill[i]].skillLevel == 0)
+                choices[i].transform.GetChild(2).GetComponent<Text>().text = playableCharacterController.UnlockSkills[LevelUpSkill[i]].skillDescription.ToString();
+            else if (playableCharacterController.UnlockSkills[LevelUpSkill[i]].skillLevel < playableCharacterController.UnlockSkills[LevelUpSkill[i]].maxLevel)
+                choices[i].transform.GetChild(2).GetComponent<Text>().text = "데미지가 " + (playableCharacterController.UnlockSkills[LevelUpSkill[i]].baseDamage + playableCharacterController.UnlockSkills[LevelUpSkill[i]].ad * playableCharacterController.UnlockSkills[LevelUpSkill[i]].skillLevel) + "에서 " + (playableCharacterController.UnlockSkills[LevelUpSkill[i]].baseDamage + playableCharacterController.UnlockSkills[LevelUpSkill[i]].ad * (playableCharacterController.UnlockSkills[LevelUpSkill[i]].skillLevel + 1)) + "로 증가합니다.";
+            else
+                choices[i].transform.GetChild(2).GetComponent<Text>().text = "이 스킬은 마스터하셨습니다.";
+
             if (playableCharacterController.UnlockSkills[LevelUpSkill[i]].skillLevel < playableCharacterController.UnlockSkills[LevelUpSkill[i]].maxLevel)
             {
                 choices[i].transform.GetChild(3).GetComponentInChildren<Text>().text = "Level Up";

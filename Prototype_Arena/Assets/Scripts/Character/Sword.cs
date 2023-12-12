@@ -5,14 +5,21 @@ using UnityEngine;
 public class Sword : MonoBehaviour
 {
     public BoxCollider meshCollider;
-
-    public void Use(float attackTime)
+    [SerializeField]
+    private float _atk;
+    public float Atk
     {
-        StartCoroutine(Attack(attackTime));
+        get { return _atk; }
     }
 
-    IEnumerator Attack(float attackTime)
+    public void Use(float attackTime, float Atk)
     {
+        StartCoroutine(Attack(attackTime, Atk));
+    }
+
+    IEnumerator Attack(float attackTime, float Atk)
+    {
+        _atk = Atk;
         yield return new WaitForSeconds(0.5f);
         meshCollider.enabled = true;
         yield return new WaitForSeconds(attackTime - 0.5f);
