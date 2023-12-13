@@ -1,3 +1,4 @@
+using Manager;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -38,7 +39,11 @@ public class PlayableCharacterController : MonoBehaviour
     private const float _leftAtk = 50f;
     private const float _rightAtk = 100f;
     private const float _RightattackTime = 1.25f;
-    private const float _DashTime = 5f;
+    private const float _DashTime = 3f;
+    public float DashTime
+    {
+        get { return _DashTime; }
+    }
     public static bool isAttack;
     public static bool isDash;
     private bool canDash;
@@ -130,6 +135,7 @@ public class PlayableCharacterController : MonoBehaviour
         canDash = true;
         foreach(SkillData skillData in _skills)
         {
+            skillData.skillLevel = 0;
             if(skillData.isUnlock)
             {
                 _unlockSkills.Add(skillData);
@@ -146,11 +152,6 @@ public class PlayableCharacterController : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            SkillManager.instance.LevelUp();
-        }
-
         Dash();
         Move();
         LeftAttack();
@@ -367,6 +368,7 @@ public class PlayableCharacterController : MonoBehaviour
             {
                 if (_unlockSkills[i].skillLevel > 0)
                 {
+                    print(_unlockSkills[i].skillAnimationTrigger);
                     if (CommandCoroutine != null)
                         StopCoroutine(CommandCoroutine);
                     isAttack = true;
@@ -388,6 +390,7 @@ public class PlayableCharacterController : MonoBehaviour
             _skillCammand += 'L';
             CommandCoroutine = StartCoroutine(ClearCommand());
             UseSkill();
+
             if (!isAttack)
             {
                 isAttack = true;
@@ -407,6 +410,7 @@ public class PlayableCharacterController : MonoBehaviour
             _skillCammand += 'R';
             CommandCoroutine = StartCoroutine(ClearCommand());
             UseSkill();
+
             if (!isAttack)
             {
                 isAttack = true;
@@ -441,6 +445,7 @@ public class PlayableCharacterController : MonoBehaviour
             if (CommandCoroutine != null)
                 StopCoroutine(CommandCoroutine);
             _skillCammand += 'S';
+
             CommandCoroutine = StartCoroutine(ClearCommand());
             isDash = true;
             canDash = false;
@@ -463,6 +468,7 @@ public class PlayableCharacterController : MonoBehaviour
 
     IEnumerator DashEnd()
     {
+        SkillManager.instance.Dash();
         yield return new WaitForSeconds(_DashTime);
         canDash = true;
     }

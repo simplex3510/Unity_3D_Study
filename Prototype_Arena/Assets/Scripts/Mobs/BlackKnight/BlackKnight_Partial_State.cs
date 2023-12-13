@@ -1,5 +1,6 @@
 ﻿using Base.Mobs.Entity;
 using Base.Mobs.State;
+using Manager;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -52,6 +53,7 @@ public partial class BlackKnight
 
     public void DieAndDestroy()
     {
+        GameManager.instance.kill++;
         Destroy(gameObject);
     }
     #endregion

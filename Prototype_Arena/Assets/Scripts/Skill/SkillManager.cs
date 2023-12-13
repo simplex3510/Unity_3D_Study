@@ -1,5 +1,8 @@
+using Manager;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,9 +15,11 @@ public class SkillManager : MonoBehaviour
     public List<int> LevelUpSkill;
     public GameObject LevelBase;
     public Text CommandText;
+    public Text killText;
     public Slider HpBar;
     public Image[] UnlockSkill = new Image[9];
     public List<SkillData> skillUI;
+    public Image DashUI;
 
     private void Awake()
     {
@@ -31,19 +36,23 @@ public class SkillManager : MonoBehaviour
 
     private void Update()
     {
-        CommandText.text = "Command: " + player.GetComponent<PlayableCharacterController>().SkillCammand;
-        HpBar.value = player.GetComponent<PlayableCharacterController>().Life / 200;
+
+        killText.text = GameManager.instance.kill + " / " + GameManager.instance.needKill;
+        CommandText.text = "Command: ";
+        CommandText.text += playableCharacterController.SkillCammand.Length > 5 ? playableCharacterController.SkillCammand.Substring(playableCharacterController.SkillCammand.Length - 5, 5) : playableCharacterController.SkillCammand;
+        HpBar.value = playableCharacterController.Life / 200;
     }
 
     public void LevelUp()
     {
+        Time.timeScale = 0;
         PlayableCharacterController.isAttack = true;
         playableCharacterController.SkillCammand = "";
         int choice = 0;
         LevelUpSkill = new List<int>();
         while (choice < 3)
         { 
-            int rand = Random.Range(0, playableCharacterController.UnlockSkills.Count);
+            int rand = UnityEngine.Random.Range(0, playableCharacterController.UnlockSkills.Count);
             if(LevelUpSkill.Contains(rand))
             {
                 continue;
@@ -106,17 +115,49 @@ public class SkillManager : MonoBehaviour
 
         LevelBase.SetActive(false);
         PlayableCharacterController.isAttack = false;
-        skillUI.Sort(compare);
+        skillUI.Sort(compareUISkills);
+        playableCharacterController.UnlockSkills.Sort(comparePlayerSkills);
 
-        for(int i = 0; i < skillUI.Count; i++)
+        for (int i = 0; i < skillUI.Count; i++)
         {
             UnlockSkill[i].GetComponent<Image>().enabled = true;
             UnlockSkill[i].sprite = skillUI[i].skillImage;
         }
+
+        Time.timeScale = 1;
     }
 
-    int compare(SkillData a, SkillData b)
+    int compareUISkills(SkillData a, SkillData b)
     {
         return a.skillId < b.skillId ? -1 : 1;
+    }
+
+    int comparePlayerSkills(SkillData a, SkillData b)
+    {
+        if ((a.isUnlock && b.isUnlock) || (!a.isUnlock && !b.isUnlock))
+            return a.skillId < b.skillId ? -1 : 1;
+        else if (a.isUnlock)
+            return -1;
+        else
+            return 1;
+    }
+
+    public void Dash()
+    {
+        DashUI.GetComponent<Image>().enabled = true;
+        DashUI.fillAmount = 0;
+        StartCoroutine(DashCoolTime());
+    }
+
+    IEnumerator DashCoolTime()
+    {
+        float coolTime = playableCharacterController.DashTime;
+        while(coolTime > 0.0f)
+        {
+            coolTime -= Time.deltaTime;
+            DashUI.fillAmount = 1.0f - (coolTime / playableCharacterController.DashTime);
+            yield return new WaitForFixedUpdate();
+        }
+        DashUI.GetComponent<Image>().enabled = false;
     }
 }

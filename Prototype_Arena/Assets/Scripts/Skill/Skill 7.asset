@@ -23,7 +23,7 @@ MonoBehaviour:
   skillAnimationTime: 1.8
   childSkill:
   - {fileID: 11400000, guid: 1fc84a14b1bbdd343a401afd24e1f661, type: 2}
-  skillLevel: 0
+  skillLevel: 1
   maxLevel: 3
   baseDamage: 80
   ad: 15
