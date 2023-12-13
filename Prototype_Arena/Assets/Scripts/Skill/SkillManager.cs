@@ -12,11 +12,16 @@ public class SkillManager : MonoBehaviour
     public List<int> LevelUpSkill;
     public GameObject LevelBase;
     public Text CommandText;
+    public Slider HpBar;
+    public Image[] UnlockSkill = new Image[9];
+    public List<SkillData> skillUI;
 
     private void Awake()
     {
         if (instance == null)
             instance = this;
+
+        skillUI.Clear();
     }
 
     private void Start()
@@ -27,6 +32,7 @@ public class SkillManager : MonoBehaviour
     private void Update()
     {
         CommandText.text = "Command: " + player.GetComponent<PlayableCharacterController>().SkillCammand;
+        HpBar.value = player.GetComponent<PlayableCharacterController>().Life / 200;
     }
 
     public void LevelUp()
@@ -90,12 +96,27 @@ public class SkillManager : MonoBehaviour
         {
             if (!playableCharacterController.UnlockSkills.Contains(playableCharacterController.UnlockSkills[LevelUpSkill[num]].childSkill[i]))
             {
-                    playableCharacterController.UnlockSkills.Add(playableCharacterController.UnlockSkills[LevelUpSkill[num]].childSkill[i]);
+                playableCharacterController.UnlockSkills.Add(playableCharacterController.UnlockSkills[LevelUpSkill[num]].childSkill[i]);
             }
 
         }
 
+        if (!skillUI.Contains(playableCharacterController.UnlockSkills[LevelUpSkill[num]]))
+            skillUI.Add(playableCharacterController.UnlockSkills[LevelUpSkill[num]]);
+
         LevelBase.SetActive(false);
         PlayableCharacterController.isAttack = false;
+        skillUI.Sort(compare);
+
+        for(int i = 0; i < skillUI.Count; i++)
+        {
+            UnlockSkill[i].GetComponent<Image>().enabled = true;
+            UnlockSkill[i].sprite = skillUI[i].skillImage;
+        }
+    }
+
+    int compare(SkillData a, SkillData b)
+    {
+        return a.skillId < b.skillId ? -1 : 1;
     }
 }
