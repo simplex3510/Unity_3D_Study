@@ -242,7 +242,6 @@ public class PlayableCharacterController : MonoBehaviour
         {
             targetAngle += 360f;
         }
-        Debug.Log(targetAngle);
 
         // if has move
         if (moveDirection == Vector3.zero)

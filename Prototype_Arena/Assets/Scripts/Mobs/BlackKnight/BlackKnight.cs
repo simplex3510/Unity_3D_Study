@@ -23,6 +23,8 @@ public partial class BlackKnight : BaseEntity
         AssignAnimationParameters();
 
         StatData.InitializeStatData(300, 10);
+
+        targetChar = GameObject.FindWithTag("Player");
     }
 
     private void Start()
@@ -41,9 +43,9 @@ public partial class BlackKnight : BaseEntity
     protected override void AssignAnimationParameters()
     {
         AnimParam_Attack = Animator.StringToHash("IsTargetInRange");
-        AnimParam_Damaged = Animator.StringToHash("");
-        AnimParam_Die = Animator.StringToHash("");
-        AnimParam_Victory = Animator.StringToHash("");
-        AnimParam_Walk = Animator.StringToHash("");
+        AnimParam_Damaged = Animator.StringToHash("Damaged");
+        AnimParam_Die = Animator.StringToHash("Die");
+        AnimParam_Victory = Animator.StringToHash("Victory");
+        AnimParam_Walk = Animator.StringToHash("Respawn");
     }
 }

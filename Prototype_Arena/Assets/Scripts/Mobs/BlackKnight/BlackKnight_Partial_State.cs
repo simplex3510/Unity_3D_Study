@@ -6,8 +6,12 @@ using UnityEngine;
 
 public partial class BlackKnight
 {
+    private void OnEnable()
+    {
+        // animController.SetTrigger(AnimParam_Walk);
+    }
+
     #region public State Method
-    public GameObject Axe;
     public bool CheckTargetInRange()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, 2.0f, EnemyLayerMask);
@@ -35,7 +39,20 @@ public partial class BlackKnight
     public override void DamagedEntity(float damage)
     {
         StatData.CurHP -= damage;
-        AnimController.SetTrigger(AnimParam_Damaged);
+        if (StatData.DEAD)
+        {
+            AnimController.SetTrigger(AnimParam_Die);
+            Invoke("DieAndDestroy", 3f);
+        }
+        else
+        {
+            AnimController.SetTrigger(AnimParam_Damaged);
+        }
+    }
+
+    public void DieAndDestroy()
+    {
+        Destroy(gameObject);
     }
     #endregion
 
@@ -108,21 +125,11 @@ public partial class BlackKnight
     }
     #endregion
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "Sword")
-        {
-            print("아야");
-            DamagedEntity((float)other.gameObject.GetComponent<Sword>().Atk);
-        }
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Sword")
         {
-            print("아야");
-            DamagedEntity((float)collision.gameObject.GetComponent<Sword>().Atk);
+            DamagedEntity(collision.gameObject.GetComponent<Sword>().Atk);
         }
     }
 }
