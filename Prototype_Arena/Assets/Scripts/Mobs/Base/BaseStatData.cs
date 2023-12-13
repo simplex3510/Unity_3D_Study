@@ -30,8 +30,10 @@ namespace Base.Mobs.StatData
             get { return dead = (curHP <= 0) ? true : false; }
         }
 
-        public void InitializeStatData()
+        public void InitializeStatData(float Hp, float Atkk)
         {
+            maxHP = Hp;
+            attack = Atkk;
             curHP = maxHP;
             dead = false;
         }

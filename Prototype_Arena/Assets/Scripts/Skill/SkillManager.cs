@@ -31,6 +31,7 @@ public class SkillManager : MonoBehaviour
 
     public void LevelUp()
     {
+        PlayableCharacterController.isAttack = true;
         playableCharacterController.SkillCammand = "";
         int choice = 0;
         LevelUpSkill = new List<int>();
@@ -95,5 +96,6 @@ public class SkillManager : MonoBehaviour
         }
 
         LevelBase.SetActive(false);
+        PlayableCharacterController.isAttack = false;
     }
 }

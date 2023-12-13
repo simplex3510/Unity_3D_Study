@@ -7,6 +7,7 @@ using UnityEngine;
 public partial class BlackKnight
 {
     #region public State Method
+    public GameObject Axe;
     public bool CheckTargetInRange()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, 2.0f, EnemyLayerMask);
@@ -76,9 +77,6 @@ public partial class BlackKnight
                     break;
             }
 
-            if (Life <= 0)
-                ChangeState(EState.Die);
-
             FSM.UpdateState();
 
             yield return null;
@@ -109,4 +107,22 @@ public partial class BlackKnight
         }
     }
     #endregion
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Sword")
+        {
+            print("아야");
+            DamagedEntity((float)other.gameObject.GetComponent<Sword>().Atk);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Sword")
+        {
+            print("아야");
+            DamagedEntity((float)collision.gameObject.GetComponent<Sword>().Atk);
+        }
+    }
 }

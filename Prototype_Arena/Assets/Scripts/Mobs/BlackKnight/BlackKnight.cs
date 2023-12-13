@@ -7,7 +7,6 @@ using Base.Mobs.State;
 
 public partial class BlackKnight : BaseEntity
 {
-    public float life =300;
     public int AnimParam_Walk { get; private set; }
     public int AnimParam_Damaged { get; private set; }
     public int AnimParam_Attack { get; private set; }
@@ -23,7 +22,7 @@ public partial class BlackKnight : BaseEntity
 
         AssignAnimationParameters();
 
-        StatData.InitializeStatData();
+        StatData.InitializeStatData(300, 10);
     }
 
     private void Start()
@@ -46,24 +45,5 @@ public partial class BlackKnight : BaseEntity
         AnimParam_Die = Animator.StringToHash("");
         AnimParam_Victory = Animator.StringToHash("");
         AnimParam_Walk = Animator.StringToHash("");
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.tag == "Player" && !PlayableCharacterController.isDash && !PlayableCharacterController.isAttack)
-        {
-            //공격 중에 충돌하면 플레이어에게 데미지를 줌, 무기에도 콜라이더 달아야?
-            //collision.gameObject.GetComponent<PlayableCharacterController>().Damage(StatData.ATK);
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "Sword")
-        {
-            //최대 HP 300으로 만든 뒤 피격 판단
-            //DamagedEntity((float)other.gameObject.GetComponent<Sword>().Atk);
-            life -= other.gameObject.GetComponent<Sword>().Atk;
-        }
     }
 }

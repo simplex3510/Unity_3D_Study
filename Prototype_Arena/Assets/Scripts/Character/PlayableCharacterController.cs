@@ -534,5 +534,7 @@ public class PlayableCharacterController : MonoBehaviour
     public void Damage(float damage)
     {
         _Life -= damage;
+        if(_Life <= 0)
+            _Life = 0;
     }
 }
