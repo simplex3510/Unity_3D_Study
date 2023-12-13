@@ -15,7 +15,6 @@ public class PlayableCharacterController : MonoBehaviour
     [Header("For Debug")]
     public Vector3 moveDirection;
     public Vector3 lookDirection;
-    public Vector3 targDirection;
     public float targetAngle;
 
     // Player
@@ -23,81 +22,18 @@ public class PlayableCharacterController : MonoBehaviour
     [Tooltip("Move speed of the character in m/s")]
     public float MoveSpeed = 2.0f;
 
-    [Tooltip("Sprint speed of the character in m/s")]
-    public float SprintSpeed = 5.335f;
-
-    [Tooltip("Diagonal angle of moving")]
-    public float diagonalAngle = 0.71f;
-
-    [Tooltip("How fast the character turns to face movement direction")]
-    [Range(0.0f, 0.3f)]
-    public float RotationSmoothTime = 0.12f;
-
     [Tooltip("Acceleration and deceleration")]
     public float SpeedChangeRate = 10.0f;
-
-    public AudioClip LandingAudioClip;
-    public AudioClip[] FootstepAudioClips;
-    [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
-
-    [Space(10)]
-    [Tooltip("The height the player can jump")]
-    public float JumpHeight = 1.2f;
-
-    [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
-    public float Gravity = -15.0f;
-
-    [Space(10)]
-    [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
-    public float JumpTimeout = 0.50f;
-
-    [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
-    public float FallTimeout = 0.15f;
 
     [Tooltip("Time required to animate idle uncombat motion")]
     public float IdleTimeout = 3.0f;
 
-    // Player Grounded
-    [Header("Player Grounded")]
-    [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
-    public bool Grounded = true;
-
-    [Tooltip("Useful for rough ground")]
-    public float GroundedOffset = -0.14f;
-
-    [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
-    public float GroundedRadius = 0.28f;
-
     [Tooltip("What layers the character uses as ground")]
     public LayerMask GroundLayers;
 
-    // Cinemachine
-    [Header("Cinemachine")]
-    [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
-    public GameObject CinemachineCameraTarget;
-
-    [Tooltip("How far in degrees can you move the camera up")]
-    public float TopClamp = 70.0f;
-
-    [Tooltip("How far in degrees can you move the camera down")]
-    public float BottomClamp = -30.0f;
-
-    [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
-    public float CameraAngleOverride = 0.0f;
-
-    [Tooltip("For locking the camera position on all axis")]
-    public bool LockCameraPosition = false;
-
-    // cinemachine
-    private float _cinemachineTargetYaw;
-    private float _cinemachineTargetPitch;
-
     // player
     private float _speed;
-    private float _targetRotation = 0.0f;
-    private float _rotationVelocity;
     private float _verticalVelocity;
-    private float _terminalVelocity = 53.0f;
     private const float _leftAttackTime = 0.9f;
     private const float _leftAtk = 50f;
     private const float _rightAtk = 100f;
@@ -112,12 +48,6 @@ public class PlayableCharacterController : MonoBehaviour
     {
         get { return _Life; }
     }
-
-    // direction
-
-    // timeout deltatime
-    private float _jumpTimeoutDelta;
-    private float _fallTimeoutDelta;
     private float _idleTimeoutDelta;
 
     // animation blend value
@@ -227,114 +157,6 @@ public class PlayableCharacterController : MonoBehaviour
         RightAttack();
         Rotate();
         AnimateMotion();
-    }
-    private void UseSkill()
-    {
-        for (int i = _unlockSkills.Count - 1; i >= 0; i--)
-
-        {
-            if (_skillCammand.EndsWith(_unlockSkills[i].skillCommand))
-            {
-                if (_unlockSkills[i].skillLevel > 0)
-                {
-                    if (CommandCoroutine != null)
-                        StopCoroutine(CommandCoroutine);
-                    isAttack = true;
-                    _sword.Use(_skills[i].skillAnimationTime, _skills[i].baseDamage + _skills[i].skillLevel * _skills[i].ad);
-                    StartCoroutine(AttackEnd(_skills[i].skillAnimationTime, _skills[i].skillAnimationTrigger));
-                    _skillCammand = "";
-                    break;
-                }
-            }
-        }
-    }
-
-    private void LeftAttack()
-    {
-        if (_playerInputData.leftAttack && !isAttack && !isDash)
-        {
-            if (CommandCoroutine != null)
-                StopCoroutine(CommandCoroutine);
-            _skillCammand += 'L';
-            CommandCoroutine = StartCoroutine(ClearCommand());
-            UseSkill();
-            if (!isAttack)
-            {
-                isAttack = true;
-                _sword.Use(_leftAttackTime, _leftAtk);
-                StartCoroutine(AttackEnd(_leftAttackTime, "IsLeftAttack"));
-            }
-            _playerInputData.leftAttack = false;
-        }
-    }
-
-    private void RightAttack()
-    {
-        if (_playerInputData.rightAttack && !isAttack && !isDash)
-        {
-            if (CommandCoroutine != null)
-                StopCoroutine(CommandCoroutine);
-            _skillCammand += 'R';
-            CommandCoroutine = StartCoroutine(ClearCommand());
-            UseSkill();
-            if (!isAttack)
-            {
-                isAttack = true;
-                _sword.Use(_RightattackTime, _rightAtk);
-                StartCoroutine(AttackEnd(_RightattackTime, "IsRightAttack"));
-            }
-            _playerInputData.rightAttack = false;
-        }
-    }
-
-    IEnumerator AttackEnd(float attackTime, string animationBool)
-    {
-        _animator.SetBool("IsAttack", true);
-        _animator.SetBool(animationBool, true);
-        yield return new WaitForSeconds(attackTime);
-        isAttack = false;
-        _animator.SetBool(animationBool, false);
-        _animator.SetBool("IsAttack", false);
-    }
-    IEnumerator ClearCommand()
-    {
-        yield return new WaitForSeconds(7);
-        _skillCammand = "";
-    }
-
-    private void Dash()
-    {
-        if (_playerInputData.dash && !canDash)
-            _playerInputData.dash = false;
-        if (_playerInputData.dash && !isAttack && !isDash && canDash)
-        {
-            if (CommandCoroutine != null)
-                StopCoroutine(CommandCoroutine);
-            _skillCammand += 'S';
-            CommandCoroutine = StartCoroutine(ClearCommand());
-            isDash = true;
-            canDash = false;
-            StartCoroutine(Dashing(lookDirection));
-            StartCoroutine(DashEnd());
-            _playerInputData.dash = false;
-        }
-    }
-
-    IEnumerator Dashing(Vector3 dashDirection)
-    {
-        _animator.SetBool("IsDash", true);
-        _charController.Move(dashDirection * 0.5f);
-        yield return new WaitForSeconds(0.005f);
-        _charController.Move(dashDirection * 0.2f);
-        yield return new WaitForSeconds(0.005f);
-        _animator.SetBool("IsDash", false);
-        isDash = false;
-    }
-
-    IEnumerator DashEnd()
-    {
-        yield return new WaitForSeconds(_DashTime);
-        canDash = true;
     }
 
     private void Move()
@@ -536,5 +358,113 @@ public class PlayableCharacterController : MonoBehaviour
         _Life -= damage;
         if(_Life <= 0)
             _Life = 0;
+    }
+
+    private void UseSkill()
+    {
+        for (int i = _unlockSkills.Count - 1; i >= 0; i--)
+        {
+            if (_skillCammand.EndsWith(_unlockSkills[i].skillCommand))
+            {
+                if (_unlockSkills[i].skillLevel > 0)
+                {
+                    if (CommandCoroutine != null)
+                        StopCoroutine(CommandCoroutine);
+                    isAttack = true;
+                    _sword.Use(_skills[i].skillAnimationTime, _skills[i].baseDamage + _skills[i].skillLevel * _skills[i].ad);
+                    StartCoroutine(AttackEnd(_skills[i].skillAnimationTime, _skills[i].skillAnimationTrigger));
+                    _skillCammand = "";
+                    break;
+                }
+            }
+        }
+    }
+
+    private void LeftAttack()
+    {
+        if (_playerInputData.leftAttack && !isAttack && !isDash)
+        {
+            if (CommandCoroutine != null)
+                StopCoroutine(CommandCoroutine);
+            _skillCammand += 'L';
+            CommandCoroutine = StartCoroutine(ClearCommand());
+            UseSkill();
+            if (!isAttack)
+            {
+                isAttack = true;
+                _sword.Use(_leftAttackTime, _leftAtk);
+                StartCoroutine(AttackEnd(_leftAttackTime, "IsLeftAttack"));
+            }
+            _playerInputData.leftAttack = false;
+        }
+    }
+
+    private void RightAttack()
+    {
+        if (_playerInputData.rightAttack && !isAttack && !isDash)
+        {
+            if (CommandCoroutine != null)
+                StopCoroutine(CommandCoroutine);
+            _skillCammand += 'R';
+            CommandCoroutine = StartCoroutine(ClearCommand());
+            UseSkill();
+            if (!isAttack)
+            {
+                isAttack = true;
+                _sword.Use(_RightattackTime, _rightAtk);
+                StartCoroutine(AttackEnd(_RightattackTime, "IsRightAttack"));
+            }
+            _playerInputData.rightAttack = false;
+        }
+    }
+
+    IEnumerator AttackEnd(float attackTime, string animationBool)
+    {
+        _animator.SetBool("IsAttack", true);
+        _animator.SetBool(animationBool, true);
+        yield return new WaitForSeconds(attackTime);
+        isAttack = false;
+        _animator.SetBool(animationBool, false);
+        _animator.SetBool("IsAttack", false);
+    }
+    IEnumerator ClearCommand()
+    {
+        yield return new WaitForSeconds(7);
+        _skillCammand = "";
+    }
+
+    private void Dash()
+    {
+        if (_playerInputData.dash && !canDash)
+            _playerInputData.dash = false;
+        if (_playerInputData.dash && !isAttack && !isDash && canDash)
+        {
+            if (CommandCoroutine != null)
+                StopCoroutine(CommandCoroutine);
+            _skillCammand += 'S';
+            CommandCoroutine = StartCoroutine(ClearCommand());
+            isDash = true;
+            canDash = false;
+            StartCoroutine(Dashing(lookDirection));
+            StartCoroutine(DashEnd());
+            _playerInputData.dash = false;
+        }
+    }
+
+    IEnumerator Dashing(Vector3 dashDirection)
+    {
+        _animator.SetBool("IsDash", true);
+        _charController.Move(dashDirection * 0.5f);
+        yield return new WaitForSeconds(0.005f);
+        _charController.Move(dashDirection * 0.2f);
+        yield return new WaitForSeconds(0.005f);
+        _animator.SetBool("IsDash", false);
+        isDash = false;
+    }
+
+    IEnumerator DashEnd()
+    {
+        yield return new WaitForSeconds(_DashTime);
+        canDash = true;
     }
 }
